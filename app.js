@@ -840,38 +840,42 @@ function sendVirtualHugEmail() {
 
 function initRakhiCeremony() {
   const video = document.getElementById('rakhi-ceremony-video');
+  const videoContainer = document.getElementById('video-frame-container');
+  const videoOverlay = document.getElementById('video-play-overlay');
   const btnTie = document.getElementById('btn-tie-rakhi');
   const btnHug = document.getElementById('btn-send-hug');
   const tieBtnArea = document.getElementById('tie-rakhi-btn-area');
   const hugBtnArea = document.getElementById('hug-btn-container');
 
-  if (!btnTie || !video) return;
+  if (!video) return;
 
-  btnTie.onclick = () => {
+  let fireworksTimer = null;
+
+  const triggerCelebration = () => {
+    if (STATE.isRakhiTied) return;
+    STATE.isRakhiTied = true;
+    audio.playFanfare();
+    triggerHaptic([50, 60, 50, 60]);
+    
+    // Massive Fireworks Explosion blowing across the entire screen!
+    fx.spawnFireworks(12);
+    fx.spawnBurst(window.innerWidth / 2, window.innerHeight / 2, 90, 'confetti');
+
+    if (hugBtnArea) hugBtnArea.style.display = 'block';
+    if (tieBtnArea) tieBtnArea.style.display = 'none';
+    markActivityDone('act-5');
+  };
+
+  const startPlayback = () => {
     audio.playBell();
     audio.startBgMusic();
     triggerHaptic([30, 40, 30]);
 
-    tieBtnArea.style.display = 'none';
+    if (tieBtnArea) tieBtnArea.style.display = 'none';
+    if (videoOverlay) videoOverlay.style.opacity = '0';
 
-    let fireworksTimer = null;
-
-    const triggerCelebration = () => {
-      if (STATE.isRakhiTied) return;
-      STATE.isRakhiTied = true;
-      audio.playFanfare();
-      triggerHaptic([50, 60, 50, 60]);
-      
-      // Massive Fireworks Explosion blowing across the entire screen!
-      fx.spawnFireworks(12);
-      fx.spawnBurst(window.innerWidth / 2, window.innerHeight / 2, 90, 'confetti');
-
-      hugBtnArea.style.display = 'block';
-      markActivityDone('act-5');
-    };
-
-    // Trigger fireworks celebration EXACTLY 12 SECONDS after video actually starts playing!
     video.onplaying = () => {
+      if (videoOverlay) videoOverlay.style.opacity = '0';
       if (fireworksTimer) clearTimeout(fireworksTimer);
       fireworksTimer = setTimeout(() => {
         triggerCelebration();
@@ -883,41 +887,50 @@ function initRakhiCeremony() {
       triggerCelebration();
     };
 
-    // Chrome Mobile video play handler
+    video.onerror = (e) => {
+      console.log('Video load error fallback:', e);
+      if (videoOverlay) videoOverlay.style.opacity = '0';
+      if (fireworksTimer) clearTimeout(fireworksTimer);
+      fireworksTimer = setTimeout(() => {
+        triggerCelebration();
+      }, 12000);
+    };
+
     try {
       video.currentTime = 0;
-      video.muted = true; // Muted init for instant Chrome Mobile policy pass
-      video.load();
-      
+      video.muted = false;
       const playPromise = video.play();
       if (playPromise !== undefined) {
-        playPromise.then(() => {
-          // Unmute smoothly after play starts
-          setTimeout(() => { video.muted = false; }, 150);
-        }).catch(err => {
-          console.log('Video play retry:', err);
-          video.play();
+        playPromise.catch(err => {
+          console.log('Unmuted play blocked, trying muted play:', err);
+          video.muted = true;
+          video.play().catch(e => console.log('Muted play also note:', e));
         });
       }
     } catch(e) {
-      console.log('Video play error handled:', e);
+      console.log('Playback start handled:', e);
     }
   };
 
-  btnHug.onclick = () => {
-    audio.playPop();
-    triggerHaptic([40, 60, 40]);
-    fx.spawnBurst(window.innerWidth / 2, window.innerHeight / 2, 65, 'confetti');
+  if (btnTie) btnTie.onclick = startPlayback;
+  if (videoContainer) videoContainer.onclick = startPlayback;
 
-    // Trigger Email Notification Delivery to atanu9791@gmail.com
-    sendVirtualHugEmail();
+  if (btnHug) {
+    btnHug.onclick = () => {
+      audio.playPop();
+      triggerHaptic([40, 60, 40]);
+      fx.spawnBurst(window.innerWidth / 2, window.innerHeight / 2, 65, 'confetti');
 
-    showModal(
-      "Virtual Hug Sent! 🤗",
-      "A warm virtual hug email from Sananda Paul has been sent to atanu9791@gmail.com! 💖✨",
-      "💖"
-    );
-  };
+      // Trigger Email Notification Delivery to atanu9791@gmail.com
+      sendVirtualHugEmail();
+
+      showModal(
+        "Virtual Hug Sent! 🤗",
+        "A warm virtual hug email from Sananda Paul has been sent to atanu9791@gmail.com! 💖✨",
+        "💖"
+      );
+    };
+  }
 }
 
 // ==========================================================================
