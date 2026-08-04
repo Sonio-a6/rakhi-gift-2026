@@ -851,6 +851,12 @@ function initRakhiCeremony() {
 
   let fireworksTimer = null;
 
+  // Ensure autoplay starts playing as soon as screen is visible
+  try {
+    video.muted = true;
+    video.play().catch(e => console.log('Autoplay catch:', e));
+  } catch(e) {}
+
   const triggerCelebration = () => {
     if (STATE.isRakhiTied) return;
     STATE.isRakhiTied = true;
@@ -874,42 +880,23 @@ function initRakhiCeremony() {
     if (tieBtnArea) tieBtnArea.style.display = 'none';
     if (videoOverlay) videoOverlay.style.opacity = '0';
 
-    video.onplaying = () => {
-      if (videoOverlay) videoOverlay.style.opacity = '0';
-      if (fireworksTimer) clearTimeout(fireworksTimer);
-      fireworksTimer = setTimeout(() => {
-        triggerCelebration();
-      }, 12000);
-    };
-
-    video.onended = () => {
-      if (fireworksTimer) clearTimeout(fireworksTimer);
-      triggerCelebration();
-    };
-
-    video.onerror = (e) => {
-      console.log('Video load error fallback:', e);
-      if (videoOverlay) videoOverlay.style.opacity = '0';
-      if (fireworksTimer) clearTimeout(fireworksTimer);
-      fireworksTimer = setTimeout(() => {
-        triggerCelebration();
-      }, 12000);
-    };
-
     try {
       video.currentTime = 0;
       video.muted = false;
-      const playPromise = video.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(err => {
-          console.log('Unmuted play blocked, trying muted play:', err);
+      const p = video.play();
+      if (p !== undefined) {
+        p.catch(err => {
+          console.log('Unmute note:', err);
           video.muted = true;
-          video.play().catch(e => console.log('Muted play also note:', e));
+          video.play();
         });
       }
-    } catch(e) {
-      console.log('Playback start handled:', e);
-    }
+    } catch(e) {}
+
+    if (fireworksTimer) clearTimeout(fireworksTimer);
+    fireworksTimer = setTimeout(() => {
+      triggerCelebration();
+    }, 12000);
   };
 
   if (btnTie) btnTie.onclick = startPlayback;
