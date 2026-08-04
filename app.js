@@ -5,7 +5,7 @@
 // --- EXTERNAL VIDEO LINK OPTION ---
 // Paste any video URL here (YouTube, Google Drive, Streamable, Cloudinary, etc.)
 // If set, tapping "Tie Rakhi" will open this video link directly on her phone!
-let EXTERNAL_CEREMONY_VIDEO_URL = ""; 
+let EXTERNAL_CEREMONY_VIDEO_URL = "https://drive.google.com/drive/folders/1A_dMnPA5Fu8n3_zWF2jr4q5fbN7LvcCv"; 
 
 // --- FORCE UNREGISTER OLD SERVICE WORKERS & CLEAR CACHE TO PREVENT CACHE LOCK ---
 if ('serviceWorker' in navigator) {
