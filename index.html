@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#ff8fa3">
+  <meta name="description" content="Rakhi With My Favorite Cousin - A Heartwarming Mobile Web App Gift">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Happy Raksha Bandhan ❤️ | Best Cousin Ever</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="assets/rakhi_hero.png">
+  <link rel="stylesheet" href="styles.css?v=50000">
+</head>
+<body>
+
+  <!-- Background Canvas for Floating Hearts, Sparkles, Butterflies, Petals & Fireworks -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- Mobile App Viewport Container -->
+  <div id="app-viewport">
+
+    <!-- Top Navigation Header -->
+    <header class="top-nav">
+      <div class="brand-logo" id="header-title">
+        <span>🪢</span> Rakhi Special
+      </div>
+      <div class="nav-actions">
+        <button class="icon-btn" id="audio-toggle-btn" title="Toggle Sound & Music" aria-label="Toggle Sound & Music">🎵</button>
+        <button class="icon-btn" id="theme-toggle-btn" title="Toggle Dark/Light Mode" aria-label="Toggle Dark/Light Mode">🌙</button>
+      </div>
+    </header>
+
+    <!-- 1. SPLASH SCREEN -->
+    <section class="view-screen active" id="splash-screen">
+      <div class="splash-content">
+        <div class="rakhi-hero-wrapper">
+          <img src="assets/rakhi_hero.png" alt="Rakhi Hero" class="splash-hero-img">
+          <div class="glow-ring"></div>
+        </div>
+        <h1 class="splash-title">Happy Raksha Bandhan ❤️</h1>
+        <h2 class="splash-subtitle">For The Cousin Who Became My Best Friend</h2>
+        <p class="splash-tagline">✨ Distance may separate our homes, but our bond is forever ✨</p>
+        
+        <div class="splash-btn-wrapper">
+          <button class="btn-primary bounce" id="btn-open-gift">
+            🎁 Open My Gift
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. HOME SCREEN -->
+    <section class="view-screen" id="home-screen">
+      <div class="glass-card welcome-card">
+        <div class="welcome-header">
+          <span class="welcome-badge">Welcome ❤️</span>
+          <h2 class="hero-quote">"Distance may separate our homes,<br>but it can never separate our friendship."</h2>
+          <p class="favorite-tag">My Favorite Cousin ❤️</p>
+        </div>
+        
+        <div class="progress-container">
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" id="overall-progress"></div>
+          </div>
+          <p class="progress-text" id="progress-text">0 of 13 Memories Completed</p>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h2>💖 Our Gift Collection</h2>
+        <p>Explore all 13 magical moments created for you!</p>
+      </div>
+
+      <div class="activities-grid">
+        <!-- 1. Our Memories (Photo Wall) -->
+        <div class="activity-tile" data-act="act-1">
+          <div class="tile-icon">📸</div>
+          <div class="tile-title">Our Memories ❤️</div>
+          <div class="tile-desc">Swaying photo wall</div>
+        </div>
+
+        <!-- 2. Funny Quiz -->
+        <div class="activity-tile" data-act="act-2">
+          <div class="tile-icon">😂</div>
+          <div class="tile-title">Funny Quiz</div>
+          <div class="tile-desc">How well do you know me?</div>
+        </div>
+
+        <!-- 3. Friendship Meter -->
+        <div class="activity-tile" data-act="act-3">
+          <div class="tile-icon">❤️</div>
+          <div class="tile-title">Friendship Meter</div>
+          <div class="tile-desc">Testing our bond level</div>
+        </div>
+
+        <!-- 4. Roast & Compliment -->
+        <div class="activity-tile" data-act="act-4">
+          <div class="tile-icon">🤣</div>
+          <div class="tile-title">Roast & Praise</div>
+          <div class="tile-desc">Funny roasts & sweet words</div>
+        </div>
+
+        <!-- 5. Virtual Rakhi Ceremony -->
+        <div class="activity-tile" data-act="act-5">
+          <div class="tile-icon">🎀</div>
+          <div class="tile-title">Virtual Rakhi</div>
+          <div class="tile-desc">Cinematic ceremony video</div>
+        </div>
+
+        <!-- 6. Secret Gift -->
+        <div class="activity-tile" data-act="act-6">
+          <div class="tile-icon">🔒</div>
+          <div class="tile-title">Secret Gift</div>
+          <div class="tile-desc">Special hidden letter</div>
+        </div>
+
+        <!-- 7. Promise Wall -->
+        <div class="activity-tile" data-act="act-7">
+          <div class="tile-icon">📜</div>
+          <div class="tile-title">Promise Wall</div>
+          <div class="tile-desc">Interactive glowing promises</div>
+        </div>
+
+        <!-- 8. Spin The Wheel -->
+        <div class="activity-tile" data-act="act-8">
+          <div class="tile-icon">🎡</div>
+          <div class="tile-title">Spin The Wheel</div>
+          <div class="tile-desc">Funny rewards & coupons</div>
+        </div>
+
+        <!-- 9. Emoji Challenge -->
+        <div class="activity-tile" data-act="act-9">
+          <div class="tile-icon">😊</div>
+          <div class="tile-title">Emoji Challenge</div>
+          <div class="tile-desc">Tap fast before time ends!</div>
+        </div>
+
+        <!-- 10. Wish Jar -->
+        <div class="activity-tile" data-act="act-10">
+          <div class="tile-icon">🌸</div>
+          <div class="tile-title">Wish Jar</div>
+          <div class="tile-desc">Release glowing wishes</div>
+        </div>
+
+        <!-- 11. Distance Doesn't Matter -->
+        <div class="activity-tile" data-act="act-11">
+          <div class="tile-icon">🌍</div>
+          <div class="tile-title">Distance Map</div>
+          <div class="tile-desc">Connected across miles</div>
+        </div>
+
+        <!-- 12. Funny Chat -->
+        <div class="activity-tile" data-act="act-12">
+          <div class="tile-icon">💬</div>
+          <div class="tile-title">Funny Chat</div>
+          <div class="tile-desc">Our typical conversation</div>
+        </div>
+
+        <!-- 13. Cute Brother Test -->
+        <div class="activity-tile" data-act="act-13">
+          <div class="tile-icon">🙈</div>
+          <div class="tile-title">Cute Brother?</div>
+          <div class="tile-desc">Answer honestly! 😜</div>
+        </div>
+      </div>
+
+      <div style="text-align: center; margin-bottom: 25px;">
+        <button class="btn-primary grand-btn" id="btn-goto-final">
+          🎉 View Grand Finale
+        </button>
+      </div>
+    </section>
+
+    <!-- SCREEN 1: 📸 OUR MEMORIES ❤️ (PHOTO WALL) -->
+    <section class="view-screen" id="act-1">
+      <div class="section-header">
+        <h2>📸 Our Memories ❤️</h2>
+        <p>A decorated memory room hanging with sway photos</p>
+      </div>
+
+      <!-- Closed Photo Wall Cover Stage -->
+      <div id="photo-wall-cover" class="glass-card wall-cover-card">
+        <div class="cover-graphics">
+          <span class="floating-emoji e1">🌸</span>
+          <span class="floating-emoji e2">✨</span>
+          <span class="floating-emoji e3">💖</span>
+          <div class="mini-polaroid-stack">
+            <div class="mini-p p1">📷</div>
+            <div class="mini-p p2">🖼️</div>
+            <div class="mini-p p3">❤️</div>
+          </div>
+        </div>
+        <h3>Relive Our Unforgettable Moments</h3>
+        <p>Tap below to reveal our fairy-light photo wall!</p>
+        <button class="btn-primary" id="btn-open-photo-wall">
+          📸 Open Our Memories
+        </button>
+      </div>
+
+      <!-- Revealed Photo Wall Room Container -->
+      <div id="photo-wall-room" class="photo-wall-container" style="display: none;">
+        <!-- Fairy Light Bulbs String 1 -->
+        <div class="string-line line-1">
+          <div class="fairy-lights-row">
+            <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
+          </div>
+          <div class="polaroids-row" id="row-1-polaroids">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- String Line 2 -->
+        <div class="string-line line-2">
+          <div class="fairy-lights-row">
+            <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
+          </div>
+          <div class="polaroids-row" id="row-2-polaroids">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <!-- String Line 3 -->
+        <div class="string-line line-3">
+          <div class="fairy-lights-row">
+            <span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span><span class="bulb"></span>
+          </div>
+          <div class="polaroids-row" id="row-3-polaroids">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+
+        <p class="wall-tip">💡 Tap any photo to enlarge & swipe • Upload your own personal photos anytime!</p>
+      </div>
+    </section>
+
+    <!-- SCREEN 2: 😂 FUNNY QUIZ -->
+    <section class="view-screen" id="act-2">
+      <div class="section-header">
+        <h2>😂 Funny Quiz</h2>
+        <p>How Well Do You Know Me?</p>
+      </div>
+
+      <div class="glass-card quiz-card">
+        <div class="quiz-badge-header">
+          <span id="quiz-step-counter">Question 1 of 6</span>
+        </div>
+        <h3 id="quiz-question-title" class="quiz-q-title">
+          Loading Question...
+        </h3>
+        <div id="quiz-options-list" class="quiz-options-grid"></div>
+      </div>
+    </section>
+
+    <!-- SCREEN 3: ❤️ FRIENDSHIP METER -->
+    <section class="view-screen" id="act-3">
+      <div class="section-header">
+        <h2>❤️ Friendship Meter</h2>
+        <p>Calculating cousin compatibility</p>
+      </div>
+
+      <div class="glass-card meter-card">
+        <div class="meter-wrapper">
+          <div class="meter-gauge">
+            <div class="meter-inner-mask"></div>
+            <div class="meter-needle" id="meter-needle"></div>
+            <div class="meter-center-cap"></div>
+          </div>
+        </div>
+
+        <div class="meter-ticks">
+          <span>Friends</span>
+          <span>Best Friends</span>
+          <span>Partners in Crime</span>
+          <span>Soul-Level Cousins ❤️</span>
+        </div>
+
+        <h3 id="meter-result-title" class="meter-result-text">
+          Press Test to Calculate!
+        </h3>
+
+        <button class="btn-primary" id="btn-start-meter" style="margin-top: 20px;">
+          ⚡ Test Our Bond
+        </button>
+      </div>
+    </section>
+
+    <!-- SCREEN 4: 😂 ROAST & COMPLIMENT MACHINE -->
+    <section class="view-screen" id="act-4">
+      <div class="section-header">
+        <h2>😂 Roast & Compliment Machine</h2>
+        <p>Because teasing each other is our ultimate love language!</p>
+      </div>
+
+      <div class="glass-card roast-display-card" id="roast-display-box">
+        Tap a button below to get roasted or complimented!
+      </div>
+
+      <div class="roast-actions">
+        <button class="btn-primary btn-roast" id="btn-roast-me">
+          😂 Roast Me
+        </button>
+        <button class="btn-primary btn-praise" id="btn-praise-me">
+          ❤️ Say Something Sweet
+        </button>
+      </div>
+    </section>
+
+    <!-- SCREEN 5: 🎀 VIRTUAL RAKHI CEREMONY (EMBEDDED VIDEO PLAYER) -->
+    <section class="view-screen" id="act-5">
+      <div class="reference-rakhi-container">
+        
+        <!-- Top Corner Decorative Rakhi Garlands -->
+        <div class="top-rakhi-decor-left">🪢</div>
+        <div class="top-rakhi-decor-right">🪢</div>
+
+        <!-- Cursive Heading -->
+        <div class="reference-header">
+          <h2 class="reference-title">♡ Happy Raksha Bandhan ♡</h2>
+          <div class="title-underline"></div>
+        </div>
+
+        <!-- Center Rounded Frame for Embedded Rakhi Video Player -->
+        <div class="reference-video-frame">
+          <video id="rakhi-ceremony-video" src="assets/rakhi_video.mp4" playsinline preload="auto" poster="assets/rakhi_wrist.png"></video>
+        </div>
+
+        <!-- Emotional Message Below Video -->
+        <div class="reference-quote-box">
+          <p class="quote-line">&gt; No matter how many months separate us,</p>
+          <p class="quote-line">&gt; you'll always be my favorite cousin</p>
+          <p class="quote-line highlight">and my best friend. ♡</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 18px;" id="tie-rakhi-btn-area">
+          <button class="btn-primary grand-btn" id="btn-tie-rakhi">
+            🎀 Tie Rakhi
+          </button>
+        </div>
+
+        <div id="hug-btn-container" style="display: none; margin-top: 15px; text-align: center;">
+          <button class="btn-primary pulse" id="btn-send-hug">
+            🤗 Send Virtual Hug
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SCREEN 6: 🔒 SECRET GIFT -->
+    <section class="view-screen" id="act-6">
+      <div class="section-header">
+        <h2>🔒 Secret Gift</h2>
+        <p>A heartfelt message locked inside</p>
+      </div>
+
+      <div class="glass-card secret-card">
+        <div id="gift-box-stage" class="gift-stage">
+          <div class="gift-box-wrapper" id="gift-box-wrapper">
+            <img src="assets/gift_box.png" alt="Gift Box" class="gift-box-img wobble">
+          </div>
+          <p class="gift-hint">Tap the box or button below to unlock 🎁</p>
+        </div>
+
+        <div id="letter-stage" class="letter-stage" style="display: none;">
+          <div class="parchment-letter">
+            <div class="wax-seal">❤️</div>
+            <div class="letter-text">
+              <p>Thank you for being more than just my cousin.</p>
+              <p>You became my best friend, my safe place, my favorite person to tease, and someone whose presence always makes life brighter.</p>
+              <p>Even though we meet only after months, every meeting feels like no time has passed.</p>
+              <p>Thank you for every laugh, every memory, every silly argument, and every happy moment.</p>
+              <p class="letter-signature">Happy Raksha Bandhan ❤️</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: center;" id="secret-btn-area">
+        <button class="btn-primary" id="btn-open-secret-box">
+          🎁 Open
+        </button>
+      </div>
+    </section>
+
+    <!-- SCREEN 7: 📜 PROMISE WALL -->
+    <section class="view-screen" id="act-7">
+      <div class="section-header">
+        <h2>📜 Promise Wall</h2>
+        <p>Tap each promise card to activate its glow!</p>
+      </div>
+
+      <div id="promises-list" class="promises-grid">
+        <!-- Injected via JS -->
+      </div>
+    </section>
+
+    <!-- SCREEN 8: 🎡 SPIN THE WHEEL -->
+    <section class="view-screen" id="act-8">
+      <div class="section-header">
+        <h2>🎡 Spin The Wheel</h2>
+        <p>Spin to claim funny rewards & special coupons!</p>
+      </div>
+
+      <div class="glass-card wheel-card">
+        <div class="wheel-container">
+          <div class="wheel-pointer"></div>
+          <canvas id="wheel-canvas" width="520" height="520"></canvas>
+        </div>
+
+        <button class="btn-primary" id="btn-spin-wheel">
+          🎉 Spin Wheel 🎉
+        </button>
+      </div>
+    </section>
+
+    <!-- SCREEN 9: 😊 EMOJI CHALLENGE -->
+    <section class="view-screen" id="act-9">
+      <div class="section-header">
+        <h2>😊 Emoji Challenge</h2>
+        <p>Tap emojis before the timer ends!</p>
+      </div>
+
+      <div class="glass-card emoji-game-card">
+        <div class="game-hud">
+          <span>Score: <strong id="emoji-score">0</strong></span>
+          <span>Time: <strong id="emoji-timer">15s</strong></span>
+        </div>
+
+        <div class="emoji-game-arena" id="emoji-game-area">
+          <div class="start-hint-text">
+            Press "Start Challenge" below!
+          </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 15px;">
+          <button class="btn-primary" id="btn-start-emoji-game">
+            🚀 Start Challenge
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 10: 🌸 WISH JAR -->
+    <section class="view-screen" id="act-10">
+      <div class="section-header">
+        <h2>🌸 Wish Jar</h2>
+        <p>Tap the glass jar to release glowing wishes!</p>
+      </div>
+
+      <div class="glass-card jar-card">
+        <div class="jar-wrapper" id="jar-click-target">
+          <div class="jar-lid"></div>
+          <div class="jar-body">
+            <span class="floating-wish-sparkle">✨</span>
+            <span class="floating-wish-sparkle s2">🌸</span>
+            <span class="floating-wish-sparkle s3">💖</span>
+          </div>
+        </div>
+
+        <div class="wish-banner" id="wish-display">
+          Tap the jar above to release a wish!
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 11: 🌍 DISTANCE DOESN'T MATTER -->
+    <section class="view-screen" id="act-11">
+      <div class="section-header">
+        <h2>🌍 Distance Doesn't Matter</h2>
+        <p>Connected across miles with a golden thread</p>
+      </div>
+
+      <div class="glass-card map-card">
+        <div class="map-wrapper">
+          <canvas id="map-canvas" width="400" height="220"></canvas>
+        </div>
+
+        <div class="distance-quote-box">
+          <p>"No matter how far we are,<br>you'll always stay close to my heart."</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 12: 💬 FUNNY CHAT -->
+    <section class="view-screen" id="act-12">
+      <div class="section-header">
+        <h2>💬 Funny Chat</h2>
+        <p>Relive our typical phone conversation</p>
+      </div>
+
+      <div class="glass-card chat-card">
+        <div class="chat-messages-area" id="chat-messages-box">
+          <!-- Injected via JS -->
+        </div>
+
+        <div style="text-align: center; margin-top: 15px;">
+          <button class="btn-primary" id="btn-next-chat-msg">
+            💬 Tap to Chat
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SCREEN 13: 🙈 CUTE BROTHER CHECK -->
+    <section class="view-screen" id="act-13">
+      <div class="section-header">
+        <h2>🙈 Honest Question</h2>
+        <p>Answer with 100% honesty!</p>
+      </div>
+
+      <div class="glass-card cute-question-card" id="cute-card-arena">
+        <div class="cute-icon-header">👉👈</div>
+        <h3 class="cute-q-text">Do you think your brother is cute?</h3>
+        
+        <div class="cute-answers-area" id="cute-answers-area">
+          <button class="btn-primary cute-yes-btn" id="btn-cute-yes">
+            YES ❤️
+          </button>
+        </div>
+
+        <button class="btn-secondary cute-no-btn" id="btn-cute-no">
+          NO 😜
+        </button>
+
+        <div id="cute-result-msg" style="display: none; text-align: center; margin-top: 20px;">
+          <h2 style="color: var(--primary-pink); font-size: 1.6rem; font-family: 'Outfit', sans-serif;">I knew it! 🥰</h2>
+          <p style="font-size: 1.1rem; color: var(--text-main); margin-top: 8px;">Thank you! You are the best sister ever ❤️</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- GRAND FINALE SCREEN -->
+    <section class="view-screen" id="final-screen">
+      <div class="glass-card finale-card">
+        <div class="finale-header">
+          <span class="finale-badge">🎉 Happy Raksha Bandhan 🎉</span>
+          <h2>Dear Best Cousin ❤️</h2>
+        </div>
+
+        <div class="polaroid-highlight">
+          <img src="assets/photos/photo1.jpg" alt="Memory Photo" class="finale-img">
+          <p class="polaroid-caption">Best Cousin & Best Friend Forever</p>
+        </div>
+
+        <div class="finale-letter-body">
+          <p>We may not live in the same home, and we may only meet after months, but every time we meet, it feels like no time has passed.</p>
+          <p>You're not just my cousin—you are my best friend, my partner in every silly joke, and one of the most important people in my life.</p>
+          <p>Thank you for every laugh, every memory, every little argument, and every moment we've shared.</p>
+          <p>I hope this little app reminds you that distance can never reduce our bond.</p>
+          <p class="final-wish-tag">Happy Raksha Bandhan ❤️</p>
+          <div class="finale-signature">
+            <p>With lots of love,</p>
+            <p>Your annoying but forever caring</p>
+            <p class="signature-highlight-large">Kutta 🐶</p>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 20px;">
+          <button class="btn-primary" id="btn-celebrate-burst">
+            🎆 Replay Fireworks & Celebrations
+          </button>
+          <button class="btn-secondary" id="btn-replay-memories">
+            🏠 Back to Home
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bottom Navigation Bar Dock -->
+    <nav class="bottom-nav" id="bottom-dock" style="display: none;">
+      <div class="nav-tab active" data-target="home-screen">
+        <span class="tab-icon">🏠</span>
+        <span>Home</span>
+      </div>
+      <div class="nav-tab" data-target="act-1">
+        <span class="tab-icon">📸</span>
+        <span>Memories</span>
+      </div>
+      <div class="nav-tab" data-target="act-5">
+        <span class="tab-icon">🎀</span>
+        <span>Rakhi</span>
+      </div>
+      <div class="nav-tab" data-target="final-screen">
+        <span class="tab-icon">🎉</span>
+        <span>Finale</span>
+      </div>
+    </nav>
+
+  </div>
+
+  <!-- Reusable Global Lightbox Modal for Photos -->
+  <div class="modal-overlay" id="photo-lightbox-modal">
+    <div class="lightbox-box">
+      <button class="lightbox-close-btn" id="lightbox-close">&times;</button>
+      <div class="lightbox-content">
+        <button class="lightbox-nav-btn prev" id="lightbox-prev">&#10094;</button>
+        <div class="lightbox-polaroid">
+          <img src="" id="lightbox-img" alt="Memory Photo" class="lightbox-photo">
+          <p id="lightbox-caption" class="lightbox-caption-text"></p>
+          <label class="photo-upload-label modal-upload">
+            📷 Replace This Photo
+            <input type="file" accept="image/*" id="lightbox-file-input" style="display:none;">
+          </label>
+        </div>
+        <button class="lightbox-nav-btn next" id="lightbox-next">&#10095;</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reusable Global Message Modal -->
+  <div class="modal-overlay" id="global-modal">
+    <div class="modal-box">
+      <div id="modal-icon" class="modal-icon-emoji">🎉</div>
+      <h3 id="modal-title" class="modal-heading">Modal Title</h3>
+      <p id="modal-body" class="modal-message"></p>
+      <button class="btn-primary" id="modal-close-btn">Awesome! ❤️</button>
+    </div>
+  </div>
+
+  <script src="app.js?v=50000"></script>
+</body>
+</html>
