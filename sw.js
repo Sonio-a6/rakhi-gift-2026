@@ -1,6 +1,5 @@
-const CACHE_NAME = 'rakhi-pwa-v999';
+const CACHE_NAME = 'rakhi-pwa-v1000';
 
-// Unregister Service Worker and bypass cache
 self.addEventListener('install', (event) => {
   self.skipWaiting();
 });
@@ -18,7 +17,7 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Network-Only Strategy (No stale cache locks)
+// Network-Only Strategy for instant video streaming
 self.addEventListener('fetch', (event) => {
   return;
 });
