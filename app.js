@@ -11,19 +11,46 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// Check if running inside installed standalone PWA app
+function isPWAInstalled() {
+  return window.matchMedia('(display-mode: standalone)').matches || 
+         window.navigator.standalone === true ||
+         document.referrer.includes('android-app://');
+}
+
+function hideInstallButtons() {
+  const pwaBtn = document.getElementById('pwa-install-btn');
+  const splashBtn = document.getElementById('splash-install-btn');
+  if (pwaBtn) pwaBtn.style.display = 'none';
+  if (splashBtn) splashBtn.style.display = 'none';
+}
+
 // PWA Install Event Handler
 let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
   console.log('beforeinstallprompt fired, captured deferredPrompt');
-  const pwaBtn = document.getElementById('pwa-install-btn');
-  const splashBtn = document.getElementById('splash-install-btn');
-  if (pwaBtn) pwaBtn.style.display = 'flex';
-  if (splashBtn) splashBtn.style.display = 'inline-block';
+  if (!isPWAInstalled()) {
+    const pwaBtn = document.getElementById('pwa-install-btn');
+    const splashBtn = document.getElementById('splash-install-btn');
+    if (pwaBtn) pwaBtn.style.display = 'flex';
+    if (splashBtn) splashBtn.style.display = 'inline-block';
+  }
+});
+
+// Hide install buttons automatically once installed!
+window.addEventListener('appinstalled', () => {
+  console.log('PWA was installed successfully');
+  hideInstallButtons();
 });
 
 function triggerPWAInstall() {
+  if (isPWAInstalled()) {
+    hideInstallButtons();
+    return;
+  }
+
   const ua = navigator.userAgent || '';
   const isInApp = /FBAN|FBAV|Instagram|WhatsApp|Line|FB_IAB/i.test(ua);
 
@@ -32,13 +59,14 @@ function triggerPWAInstall() {
     deferredPrompt.userChoice.then((choiceResult) => {
       if (choiceResult.outcome === 'accepted') {
         console.log('User accepted PWA installation');
+        hideInstallButtons();
       }
       deferredPrompt = null;
     });
   } else if (isInApp) {
     showModal(
       "Open in Chrome to Install 📲",
-      "You are viewing this link inside WhatsApp/In-App browser!\n\n1. Tap the top-right 3 dots (⋮) or Share icon.\n2. Select 'Open in Chrome' or 'Open in Browser'.\n3. Tap 'Install App'!",
+      "You are viewing this link inside WhatsApp/In-App browser!\n\n1. Tap top-right 3 dots (⋮) or Share icon.\n2. Select 'Open in Chrome'.\n3. Tap 'Install App'!",
       "🌐"
     );
   } else {
@@ -1301,6 +1329,11 @@ function initCuteBrotherCheck() {
 // ==========================================================================
 document.addEventListener('DOMContentLoaded', () => {
   fx = new CanvasParticles('bg-canvas');
+
+  // Check if app is already running as installed PWA app
+  if (isPWAInstalled()) {
+    hideInstallButtons();
+  }
 
   // Theme Init
   document.body.setAttribute('data-theme', STATE.theme);
