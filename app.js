@@ -427,6 +427,15 @@ function switchScreen(screenId) {
   }
 
   // Trigger screen canvas initializers
+  if (screenId === 'act-5') {
+    const video = document.getElementById('rakhi-ceremony-video');
+    if (video) {
+      try {
+        video.pause();
+        video.currentTime = 0;
+      } catch(e) {}
+    }
+  }
   if (screenId === 'act-8') initWheelCanvas();
   if (screenId === 'act-11') drawDistanceMap();
 }
