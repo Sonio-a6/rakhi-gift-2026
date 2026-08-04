@@ -182,7 +182,7 @@ body, html {
   touch-action: pan-y !important;
   padding: 18px !important;
   padding-top: 75px !important;
-  padding-bottom: 180px !important;
+  padding-bottom: 220px !important;
   scroll-behavior: smooth;
 }
 
@@ -914,10 +914,11 @@ body, html {
   width: 100%;
   background: linear-gradient(180deg, #fff5f7 0%, #ffeaf0 100%);
   border-radius: 28px;
-  padding: 24px 16px 28px;
+  padding: 24px 16px 32px;
   box-shadow: 0 14px 35px rgba(255, 117, 143, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.8);
-  overflow: hidden;
+  overflow: visible;
+  margin-bottom: 40px;
   text-align: center;
 }
 
