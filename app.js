@@ -4,7 +4,7 @@
 
 // --- EXTERNAL VIDEO LINK OPTION ---
 // Paste any video URL here (YouTube, Google Drive, Streamable, Cloudinary, etc.)
-// If set, tapping "Tie Rakhi" will open this video link directly on her phone!
+// If set, tapping "Tie Rakhi" will embed and play this video link directly inside the app!
 let EXTERNAL_CEREMONY_VIDEO_URL = "https://drive.google.com/drive/folders/1A_dMnPA5Fu8n3_zWF2jr4q5fbN7LvcCv"; 
 
 // --- FORCE UNREGISTER OLD SERVICE WORKERS & CLEAR CACHE TO PREVENT CACHE LOCK ---
@@ -453,9 +453,15 @@ function resetAllAppStages() {
 
   // Rakhi ceremony video reset
   const video = document.getElementById('rakhi-ceremony-video');
+  const driveIframe = document.getElementById('drive-video-iframe');
+
   if (video) {
     video.pause();
     try { video.currentTime = 0; } catch(e) {}
+  }
+  if (driveIframe) {
+    driveIframe.style.display = 'none';
+    driveIframe.src = '';
   }
 
   const tieBtnArea = document.getElementById('tie-rakhi-btn-area');
@@ -775,6 +781,7 @@ function sendVirtualHugEmail() {
 
 function initRakhiCeremony() {
   const video = document.getElementById('rakhi-ceremony-video');
+  const driveIframe = document.getElementById('drive-video-iframe');
   const btnTie = document.getElementById('btn-tie-rakhi');
   const btnHug = document.getElementById('btn-send-hug');
   const tieBtnArea = document.getElementById('tie-rakhi-btn-area');
@@ -791,12 +798,37 @@ function initRakhiCeremony() {
     audio.startBgMusic();
     triggerHaptic([30, 40, 30]);
 
-    // If an external video link is provided, open it on her phone!
+    if (tieBtnArea) tieBtnArea.style.display = 'none';
+
+    // Check if Google Drive link or external video URL is set
     if (EXTERNAL_CEREMONY_VIDEO_URL && EXTERNAL_CEREMONY_VIDEO_URL.trim() !== "") {
-      window.open(EXTERNAL_CEREMONY_VIDEO_URL.trim(), '_blank');
+      const url = EXTERNAL_CEREMONY_VIDEO_URL.trim();
+      video.style.display = 'none';
+      driveIframe.style.display = 'block';
+
+      // If it's a direct Google Drive File URL (e.g. /file/d/FILE_ID/view)
+      if (url.includes('/file/d/')) {
+        const fileIdMatch = url.match(/\/file\/d\/([^\/]+)/);
+        if (fileIdMatch && fileIdMatch[1]) {
+          driveIframe.src = `https://drive.google.com/file/d/${fileIdMatch[1]}/preview`;
+        } else {
+          driveIframe.src = url;
+        }
+      } 
+      // If it's a Google Drive Folder URL (e.g. /drive/folders/FOLDER_ID)
+      else if (url.includes('/drive/folders/')) {
+        const folderIdMatch = url.match(/\/drive\/folders\/([^\/\?]+)/);
+        if (folderIdMatch && folderIdMatch[1]) {
+          driveIframe.src = `https://drive.google.com/embeddedfolderview?id=${folderIdMatch[1]}#grid`;
+        } else {
+          driveIframe.src = url;
+        }
+      } else {
+        driveIframe.src = url;
+      }
     } else {
-      if (tieBtnArea) tieBtnArea.style.display = 'none';
       video.style.display = 'block';
+      if (driveIframe) driveIframe.style.display = 'none';
       video.muted = true;
 
       try {
@@ -838,8 +870,6 @@ function initRakhiCeremony() {
 
   btnTie.onclick = startVideoPlay;
   btnTie.ontouchstart = startVideoPlay;
-  video.onclick = startVideoPlay;
-  video.ontouchstart = startVideoPlay;
 
   btnHug.onclick = () => {
     audio.playPop();
