@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rakhi-pwa-v140';
+const CACHE_NAME = 'rakhi-pwa-v160';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -15,11 +15,10 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Network-First with Cache Fallback for Chrome & Direct Pass for Video Range Requests
+// Service Worker Fetch Event
 self.addEventListener('fetch', (event) => {
-  // Bypass Service Worker for MP4 video streaming to support Range headers in PWA mode
-  if (event.request.url.includes('.mp4') || event.request.headers.get('range')) {
-    event.respondWith(fetch(event.request));
+  // Let the browser handle MP4 video natively without SW interception for 100% Chrome video support
+  if (event.request.url.includes('.mp4')) {
     return;
   }
 

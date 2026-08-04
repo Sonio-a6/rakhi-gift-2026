@@ -854,15 +854,19 @@ function initRakhiCeremony() {
 
     tieBtnArea.style.display = 'none';
 
-    // Play Rakhi ceremony video safely in PWA standalone mode
+    // Chrome Mobile video play handler
     try {
       video.currentTime = 0;
-      video.muted = false;
+      video.muted = true; // Muted init for instant Chrome Mobile policy pass
+      video.load();
+      
       const playPromise = video.play();
       if (playPromise !== undefined) {
-        playPromise.catch(err => {
-          console.log('Autoplay unmuted blocked, falling back to muted video:', err);
-          video.muted = true;
+        playPromise.then(() => {
+          // Unmute smoothly after play starts
+          setTimeout(() => { video.muted = false; }, 150);
+        }).catch(err => {
+          console.log('Video play retry:', err);
           video.play();
         });
       }
