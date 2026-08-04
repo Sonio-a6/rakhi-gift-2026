@@ -913,19 +913,21 @@ body, html {
   position: relative;
   width: 100%;
   background: linear-gradient(180deg, #fff5f7 0%, #ffeaf0 100%);
-  border-radius: 28px;
-  padding: 24px 16px 28px;
+  border-radius: 24px;
+  padding: 16px 12px 20px;
   box-shadow: 0 14px 35px rgba(255, 117, 143, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.8);
   overflow: hidden;
   text-align: center;
+  touch-action: pan-y;
+  user-select: auto;
 }
 
 /* Corner Rakhi Ornaments */
 .top-rakhi-decor-left, .top-rakhi-decor-right {
   position: absolute;
-  top: -10px;
-  font-size: 2.2rem;
+  top: -8px;
+  font-size: 1.8rem;
   filter: drop-shadow(0 4px 10px rgba(255, 77, 109, 0.4));
   animation: floatRakhiOrnament 3s ease-in-out infinite alternate;
 }
@@ -938,12 +940,12 @@ body, html {
 }
 
 .reference-header {
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .reference-title {
   font-family: var(--font-hand);
-  font-size: 2.4rem;
+  font-size: 2.1rem;
   font-weight: 700;
   color: #ff3b68;
   margin: 0;
@@ -951,22 +953,22 @@ body, html {
 }
 
 .title-underline {
-  width: 60px;
+  width: 50px;
   height: 3px;
   background: #ff758f;
-  margin: 6px auto 0;
+  margin: 4px auto 0;
   border-radius: 3px;
 }
 
 .reference-video-frame {
   position: relative;
   width: 100%;
-  height: 260px;
-  border-radius: 20px;
+  height: 195px;
+  border-radius: 18px;
   overflow: hidden;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   border: 2px solid #ffffff;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   background: #000000;
 }
 
@@ -978,18 +980,18 @@ body, html {
 }
 
 .reference-quote-box {
-  margin: 15px 0 10px;
+  margin: 10px 0 8px;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 4px;
 }
 
 .quote-line {
   font-family: var(--font-hand);
-  font-size: 1.55rem;
+  font-size: 1.35rem;
   color: #e63946;
   margin: 0;
-  line-height: 1.35;
+  line-height: 1.25;
 }
 
 .quote-line.highlight {
