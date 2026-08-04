@@ -2,24 +2,30 @@
   "name": "Happy Raksha Bandhan ❤️",
   "short_name": "Rakhi Gift",
   "description": "A heartwarming mobile gift app for my sister on Raksha Bandhan.",
-  "start_url": "/rakhi-gift/",
-  "scope": "/rakhi-gift/",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#fff0f5",
   "theme_color": "#ff8fa3",
   "icons": [
     {
-      "src": "assets/rakhi_hero.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "assets/rakhi_hero.png",
+      "src": "./assets/rakhi_hero.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/rakhi_hero.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/rakhi_hero.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
