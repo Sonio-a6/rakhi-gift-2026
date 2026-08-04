@@ -11,6 +11,35 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+// PWA Install Event Handler
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  const pwaBtn = document.getElementById('pwa-install-btn');
+  const splashBtn = document.getElementById('splash-install-btn');
+  if (pwaBtn) pwaBtn.style.display = 'flex';
+  if (splashBtn) splashBtn.style.display = 'inline-block';
+});
+
+function triggerPWAInstall() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('User accepted the PWA install prompt');
+      }
+      deferredPrompt = null;
+    });
+  } else {
+    showModal(
+      "Install App on Phone 📲",
+      "Android (Chrome): Tap top 3-dots ⋮ menu -> Select 'Install app' or 'Add to Home screen'.\n\niPhone (Safari): Tap Share button 📤 -> Select 'Add to Home Screen'.",
+      "📲"
+    );
+  }
+}
+
 // Clear any stale stored completion data on launch
 try {
   localStorage.removeItem('rakhi_completed');
@@ -1265,6 +1294,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Theme Init
   document.body.setAttribute('data-theme', STATE.theme);
+
+  // Install PWA Button Click Handlers
+  const pwaBtn = document.getElementById('pwa-install-btn');
+  const splashBtn = document.getElementById('splash-install-btn');
+  if (pwaBtn) pwaBtn.addEventListener('click', triggerPWAInstall);
+  if (splashBtn) splashBtn.addEventListener('click', triggerPWAInstall);
 
   // Audio Toggle
   document.getElementById('audio-toggle-btn').addEventListener('click', (e) => {
