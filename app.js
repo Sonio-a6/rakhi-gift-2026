@@ -357,7 +357,6 @@ function switchScreen(screenId) {
   }
 
   // Trigger screen canvas initializers
-  if (screenId === 'act-5') initRakhiCeremonyCanvas();
   if (screenId === 'act-8') initWheelCanvas();
   if (screenId === 'act-11') drawDistanceMap();
   if (screenId === 'final-screen') {
@@ -447,7 +446,13 @@ function resetAllAppStages() {
   if (letterStage) letterStage.style.display = 'none';
   if (secretBtnArea) secretBtnArea.style.display = 'block';
 
-  // Rakhi ceremony reset
+  // Rakhi ceremony video reset
+  const video = document.getElementById('rakhi-ceremony-video');
+  if (video) {
+    video.pause();
+    try { video.currentTime = 0; } catch(e) {}
+  }
+
   const tieBtnArea = document.getElementById('tie-rakhi-btn-area');
   const hugBtnArea = document.getElementById('hug-btn-container');
 
@@ -742,7 +747,7 @@ function initRoastGenerator() {
 }
 
 // ==========================================================================
-// FEATURE 5: 🎀 VIRTUAL RAKHI CEREMONY (MASTER ANIMATED CANVAS ENGINE - 100% MOBILE SUPPORT)
+// FEATURE 5: 🎀 VIRTUAL RAKHI CEREMONY (EMAIL NOTIFICATION DELIVERED ON VIRTUAL HUG)
 // Sends email to atanu9791@gmail.com from Sananda Paul with Hug Emoji!
 // ==========================================================================
 function sendVirtualHugEmail() {
@@ -763,92 +768,16 @@ function sendVirtualHugEmail() {
   }).catch(err => console.log('Email delivery note:', err));
 }
 
-let isCeremonyAnimating = false;
-let ceremonyAnimFrame = null;
-
-function initRakhiCeremonyCanvas() {
-  const canvas = document.getElementById('rakhi-ceremony-canvas');
-  if (!canvas) return;
-
-  const ctx = canvas.getContext('2d');
-  canvas.width = canvas.parentElement.clientWidth || 320;
-  canvas.height = 260;
-
-  const img = new Image();
-  img.src = 'assets/rakhi_wrist.png';
-
-  let progress = 0;
-  const particles = [];
-  for (let i = 0; i < 28; i++) {
-    particles.push({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      size: 10 + Math.random() * 14,
-      speedY: 0.5 + Math.random() * 1.2,
-      symbol: ['🌸', '✨', '❤️', '🪢', '💖'][Math.floor(Math.random() * 5)]
-    });
-  }
-
-  function renderFrame() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    // 1. Draw Wrist Image Base
-    if (img.complete && img.naturalWidth > 0) {
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    } else {
-      ctx.fillStyle = '#ffeaf0';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-    }
-
-    // 2. Animated Tying Golden Thread Spiral around Wrist
-    if (isCeremonyAnimating) {
-      progress = Math.min(progress + 0.012, 1);
-
-      ctx.save();
-      ctx.beginPath();
-      ctx.strokeStyle = '#ffb703';
-      ctx.lineWidth = 7;
-      ctx.shadowColor = '#ff4d6d';
-      ctx.shadowBlur = 14;
-      ctx.arc(canvas.width / 2, canvas.height / 2, 65 * progress, 0, Math.PI * 2 * progress);
-      ctx.stroke();
-
-      // Inner Glowing Golden Ring
-      ctx.beginPath();
-      ctx.strokeStyle = '#ffffff';
-      ctx.lineWidth = 3;
-      ctx.arc(canvas.width / 2, canvas.height / 2, 65 * progress, 0, Math.PI * 2 * progress);
-      ctx.stroke();
-      ctx.restore();
-    }
-
-    // 3. Floating Ceremony Petals & Sparkles
-    particles.forEach(p => {
-      p.y -= p.speedY;
-      if (p.y < -20) p.y = canvas.height + 20;
-      ctx.font = `${p.size}px sans-serif`;
-      ctx.fillText(p.symbol, p.x, p.y);
-    });
-
-    ceremonyAnimFrame = requestAnimationFrame(renderFrame);
-  }
-
-  img.onload = () => {
-    if (ceremonyAnimFrame) cancelAnimationFrame(ceremonyAnimFrame);
-    renderFrame();
-  };
-  renderFrame();
-}
-
 function initRakhiCeremony() {
+  const video = document.getElementById('rakhi-ceremony-video');
   const btnTie = document.getElementById('btn-tie-rakhi');
   const btnHug = document.getElementById('btn-send-hug');
   const tieBtnArea = document.getElementById('tie-rakhi-btn-area');
   const hugBtnArea = document.getElementById('hug-btn-container');
 
-  if (!btnTie) return;
+  if (!btnTie || !video) return;
 
-  const startCeremony = (e) => {
+  const startVideoPlay = (e) => {
     if (e) {
       try { e.preventDefault(); } catch(err) {}
     }
@@ -858,25 +787,54 @@ function initRakhiCeremony() {
     triggerHaptic([30, 40, 30]);
 
     if (tieBtnArea) tieBtnArea.style.display = 'none';
-    isCeremonyAnimating = true;
 
-    // Trigger celebration after 4.5 seconds of tying animation
-    setTimeout(() => {
+    video.style.display = 'block';
+    video.muted = true; // Essential for mobile autoplay policies!
+
+    try {
+      if (video.readyState >= 1) {
+        video.currentTime = 0;
+      }
+    } catch(err) {
+      console.log('Video reset note:', err);
+    }
+    
+    // Direct Play Call for mobile browsers
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        console.log('Mobile video playing successfully!');
+      }).catch(err => {
+        console.log('Mobile video play retry with muted:', err);
+        video.muted = true;
+        video.play().catch(e => console.log('Video play error:', e));
+      });
+    }
+
+    const triggerCelebration = () => {
       if (STATE.isRakhiTied) return;
       STATE.isRakhiTied = true;
       audio.playFanfare();
       triggerHaptic([50, 60, 50, 60]);
 
       fx.spawnFireworks(12);
-      fx.spawnBurst(window.innerWidth / 2, window.innerHeight / 2, 95, 'confetti');
+      fx.spawnBurst(window.innerWidth / 2, window.innerHeight / 2, 90, 'confetti');
 
       if (hugBtnArea) hugBtnArea.style.display = 'block';
       markActivityDone('act-5');
-    }, 4500);
+    };
+
+    video.onended = triggerCelebration;
+
+    setTimeout(() => {
+      triggerCelebration();
+    }, 11000);
   };
 
-  btnTie.onclick = startCeremony;
-  btnTie.ontouchstart = startCeremony;
+  btnTie.onclick = startVideoPlay;
+  btnTie.ontouchstart = startVideoPlay;
+  video.onclick = startVideoPlay;
+  video.ontouchstart = startVideoPlay;
 
   btnHug.onclick = () => {
     audio.playPop();
@@ -1394,7 +1352,6 @@ document.addEventListener('DOMContentLoaded', () => {
   renderQuizQuestion();
   initFriendshipMeter();
   initRoastGenerator();
-  initRakhiCeremonyCanvas();
   initRakhiCeremony();
   initSecretBox();
   initPromiseWall();
