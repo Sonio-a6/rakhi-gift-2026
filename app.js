@@ -448,10 +448,13 @@ function resetAllAppStages() {
 
   // Rakhi ceremony video reset
   const video = document.getElementById('rakhi-ceremony-video');
+  const playOverlayBtn = document.getElementById('video-play-overlay-btn');
   if (video) {
     video.pause();
-    video.currentTime = 0;
+    try { video.currentTime = 0; } catch(e) {}
   }
+  if (playOverlayBtn) playOverlayBtn.style.display = 'flex';
+
   const tieBtnArea = document.getElementById('tie-rakhi-btn-area');
   const hugBtnArea = document.getElementById('hug-btn-container');
 
@@ -770,6 +773,8 @@ function sendVirtualHugEmail() {
 
 function initRakhiCeremony() {
   const video = document.getElementById('rakhi-ceremony-video');
+  const playOverlayBtn = document.getElementById('video-play-overlay-btn');
+  const videoFrameContainer = document.getElementById('video-frame-container');
   const btnTie = document.getElementById('btn-tie-rakhi');
   const btnHug = document.getElementById('btn-send-hug');
   const tieBtnArea = document.getElementById('tie-rakhi-btn-area');
@@ -778,15 +783,24 @@ function initRakhiCeremony() {
   if (!btnTie || !video) return;
 
   const startVideoPlay = (e) => {
-    if (e) e.preventDefault();
+    if (e) {
+      try { e.preventDefault(); } catch(err) {}
+    }
     audio.playBell();
     audio.startBgMusic();
     triggerHaptic([30, 40, 30]);
 
     if (tieBtnArea) tieBtnArea.style.display = 'none';
+    if (playOverlayBtn) playOverlayBtn.style.display = 'none';
 
-    video.currentTime = 0;
-    video.muted = true; // Crucial for mobile Chrome autoplay policy!
+    try {
+      video.muted = true; // Crucial for mobile Chrome autoplay policy!
+      if (video.readyState >= 1) {
+        video.currentTime = 0;
+      }
+    } catch(err) {
+      console.log('Video reset note:', err);
+    }
     
     // Play video smoothly on mobile Chrome & Safari
     const playPromise = video.play();
@@ -822,8 +836,11 @@ function initRakhiCeremony() {
 
   btnTie.onclick = startVideoPlay;
   btnTie.ontouchstart = startVideoPlay;
-  video.onclick = startVideoPlay;
-  video.ontouchstart = startVideoPlay;
+
+  if (videoFrameContainer) {
+    videoFrameContainer.onclick = startVideoPlay;
+    videoFrameContainer.ontouchstart = startVideoPlay;
+  }
 
   btnHug.onclick = () => {
     audio.playPop();
