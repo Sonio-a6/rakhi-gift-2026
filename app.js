@@ -854,9 +854,21 @@ function initRakhiCeremony() {
 
     tieBtnArea.style.display = 'none';
 
-    // Play Rakhi ceremony video
-    video.currentTime = 0;
-    video.play().catch(err => console.log('Video play note:', err));
+    // Play Rakhi ceremony video safely in PWA standalone mode
+    try {
+      video.currentTime = 0;
+      video.muted = false;
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(err => {
+          console.log('Autoplay unmuted blocked, falling back to muted video:', err);
+          video.muted = true;
+          video.play();
+        });
+      }
+    } catch(e) {
+      console.log('Video play error handled:', e);
+    }
 
     const triggerCelebration = () => {
       if (STATE.isRakhiTied) return;
