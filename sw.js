@@ -1,9 +1,9 @@
-const CACHE_NAME = 'rakhi-pwa-v38';
+const CACHE_NAME = 'rakhi-pwa-v40';
 const ASSETS_TO_CACHE = [
   './',
-  './index.html?v=110000',
-  './styles.css?v=110000',
-  './app.js?v=110000',
+  './index.html?v=130000',
+  './styles.css?v=130000',
+  './app.js?v=130000',
   './manifest.json',
   './assets/rakhi_hero.png',
   './assets/rakhi_wrist.png',

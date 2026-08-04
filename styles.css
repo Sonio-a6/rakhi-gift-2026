@@ -186,6 +186,13 @@ body, html {
   scroll-behavior: smooth;
 }
 
+#act-5 {
+  padding-bottom: 150px !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  touch-action: pan-y !important;
+}
+
 .view-screen.active {
   opacity: 1;
   pointer-events: auto;

@@ -2,20 +2,12 @@
    Rakhi With My Favorite Cousin - Application Logic & Interactive Engine
    ========================================================================== */
 
-// --- FORCE UNREGISTER OLD SERVICE WORKERS & CLEAR CACHE TO PREVENT CACHE LOCK ---
+// --- REGISTER PWA SERVICE WORKER FOR MOBILE INSTALLATION ---
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.getRegistrations().then(registrations => {
-    for (let registration of registrations) {
-      registration.unregister();
-    }
-  });
-}
-
-if ('caches' in window) {
-  caches.keys().then(names => {
-    for (let name of names) {
-      caches.delete(name);
-    }
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js')
+      .then(reg => console.log('PWA ServiceWorker Active:', reg))
+      .catch(err => console.log('PWA ServiceWorker error:', err));
   });
 }
 
