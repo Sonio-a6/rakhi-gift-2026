@@ -427,20 +427,6 @@ function switchScreen(screenId) {
   }
 
   // Trigger screen canvas initializers
-  if (screenId === 'act-5') {
-    const video = document.getElementById('rakhi-ceremony-video');
-    if (video) {
-      try {
-        video.muted = true;
-        video.currentTime = 0;
-        video.load();
-        const p = video.play();
-        if (p !== undefined) {
-          p.catch(err => console.log('Act-5 screen play catch:', err));
-        }
-      } catch(e) {}
-    }
-  }
   if (screenId === 'act-8') initWheelCanvas();
   if (screenId === 'act-11') drawDistanceMap();
 }
@@ -854,36 +840,14 @@ function sendVirtualHugEmail() {
 
 function initRakhiCeremony() {
   const video = document.getElementById('rakhi-ceremony-video');
-  const videoContainer = document.getElementById('video-frame-container');
-  const videoOverlay = document.getElementById('video-play-overlay');
-  const videoFallback = document.getElementById('rakhi-animated-fallback');
   const btnTie = document.getElementById('btn-tie-rakhi');
   const btnHug = document.getElementById('btn-send-hug');
   const tieBtnArea = document.getElementById('tie-rakhi-btn-area');
   const hugBtnArea = document.getElementById('hug-btn-container');
 
-  if (!video) return;
+  if (!video || !btnTie) return;
 
   let fireworksTimer = null;
-  let isVideoPlayingSmoothly = false;
-
-  video.onplaying = () => {
-    isVideoPlayingSmoothly = true;
-    if (videoFallback) videoFallback.style.display = 'none';
-  };
-
-  // If video stream takes more than 1.2s to load over mobile data, activate glowing Rakhi animation fallback
-  setTimeout(() => {
-    if (!isVideoPlayingSmoothly) {
-      if (videoFallback) videoFallback.style.display = 'flex';
-    }
-  }, 1200);
-
-  // Ensure autoplay starts playing as soon as screen is visible
-  try {
-    video.muted = true;
-    video.play().catch(e => console.log('Autoplay catch:', e));
-  } catch(e) {}
 
   const triggerCelebration = () => {
     if (STATE.isRakhiTied) return;
@@ -900,13 +864,12 @@ function initRakhiCeremony() {
     markActivityDone('act-5');
   };
 
-  const startPlayback = () => {
+  btnTie.onclick = () => {
     audio.playBell();
     audio.startBgMusic();
     triggerHaptic([30, 40, 30]);
 
     if (tieBtnArea) tieBtnArea.style.display = 'none';
-    if (videoOverlay) videoOverlay.style.opacity = '0';
 
     try {
       video.currentTime = 0;
@@ -914,7 +877,7 @@ function initRakhiCeremony() {
       const p = video.play();
       if (p !== undefined) {
         p.catch(err => {
-          console.log('Unmute note:', err);
+          console.log('Unmuted play note:', err);
           video.muted = true;
           video.play();
         });
@@ -926,9 +889,6 @@ function initRakhiCeremony() {
       triggerCelebration();
     }, 12000);
   };
-
-  if (btnTie) btnTie.onclick = startPlayback;
-  if (videoContainer) videoContainer.onclick = startPlayback;
 
   if (btnHug) {
     btnHug.onclick = () => {
