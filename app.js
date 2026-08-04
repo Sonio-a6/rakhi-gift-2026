@@ -348,13 +348,20 @@ function switchScreen(screenId) {
     bottomDock.style.display = 'flex';
   }
 
-  // Trigger screen canvas initializers
-  if (screenId === 'act-8') initWheelCanvas();
-  if (screenId === 'act-11') drawDistanceMap();
+  // Update Finale Photo dynamically if custom photo exists
   if (screenId === 'final-screen') {
+    const finaleImg = document.querySelector('.finale-img');
+    const customPhotos = JSON.parse(localStorage.getItem('rakhi_custom_photos')) || {};
+    if (finaleImg && customPhotos['p1']) {
+      finaleImg.src = customPhotos['p1'];
+    }
     fx.spawnFireworks(7);
     audio.playFanfare();
   }
+
+  // Trigger screen canvas initializers
+  if (screenId === 'act-8') initWheelCanvas();
+  if (screenId === 'act-11') drawDistanceMap();
 }
 
 function markActivityDone(actId) {
@@ -491,7 +498,9 @@ function resetAllAppStages() {
 // FEATURE 1: 📸 OUR MEMORIES ❤️ (SWAYING PHOTO WALL)
 // ==========================================================================
 
-const SAVED_PHOTOS = JSON.parse(localStorage.getItem('rakhi_custom_photos')) || {};
+function getSavedPhotos() {
+  return JSON.parse(localStorage.getItem('rakhi_custom_photos')) || {};
+}
 
 const MEMORY_PHOTOS = [
   { id: 'p1', defaultImg: 'assets/photos/photo1.jpg', caption: 'Best Cousin & Best Friend ❤️', stringRow: 1 },
@@ -538,12 +547,12 @@ function initPhotoWall() {
       reader.onload = (event) => {
         const base64 = event.target.result;
         const currentItem = MEMORY_PHOTOS[STATE.activePhotoIndex];
-        SAVED_PHOTOS[currentItem.id] = base64;
-        localStorage.setItem('rakhi_custom_photos', JSON.stringify(SAVED_PHOTOS));
+        const saved = getSavedPhotos();
+        saved[currentItem.id] = base64;
+        localStorage.setItem('rakhi_custom_photos', JSON.stringify(saved));
         
         document.getElementById('lightbox-img').src = base64;
-        const thumbImg = document.getElementById(`thumb-${currentItem.id}`);
-        if (thumbImg) thumbImg.src = base64;
+        renderPhotoWallItems(); // Immediately re-render wall thumbnails!
 
         audio.playPop();
         triggerHaptic([30, 30]);
@@ -563,6 +572,7 @@ function initPhotoWall() {
 }
 
 function renderPhotoWallItems() {
+  const savedPhotos = getSavedPhotos();
   [1, 2, 3].forEach(rowNum => {
     const rowElem = document.getElementById(`row-${rowNum}-polaroids`);
     if (!rowElem) return;
@@ -570,7 +580,7 @@ function renderPhotoWallItems() {
 
     const rowItems = MEMORY_PHOTOS.filter(item => item.stringRow === rowNum);
     rowItems.forEach((item, idx) => {
-      const photoSrc = SAVED_PHOTOS[item.id] || item.defaultImg;
+      const photoSrc = savedPhotos[item.id] || item.defaultImg;
       const card = document.createElement('div');
       card.className = 'polaroid-card';
       card.style.animationDelay = `${idx * 0.25}s`;
@@ -595,7 +605,8 @@ function renderPhotoWallItems() {
 function openLightbox(index) {
   STATE.activePhotoIndex = index;
   const item = MEMORY_PHOTOS[index];
-  const photoSrc = SAVED_PHOTOS[item.id] || item.defaultImg;
+  const savedPhotos = getSavedPhotos();
+  const photoSrc = savedPhotos[item.id] || item.defaultImg;
 
   document.getElementById('lightbox-img').src = photoSrc;
   document.getElementById('lightbox-caption').innerText = item.caption;
