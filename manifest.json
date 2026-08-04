@@ -1,13 +1,15 @@
 {
+  "id": "rakhi-gift-pwa-v1",
   "name": "Happy Raksha Bandhan ❤️",
   "short_name": "Rakhi Gift",
-  "description": "A heartwarming mobile gift app for my sister on Raksha Bandhan.",
+  "description": "A heartwarming mobile PWA gift app for my sister on Raksha Bandhan.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#fff0f5",
   "theme_color": "#ff8fa3",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "./assets/rakhi_hero.png",

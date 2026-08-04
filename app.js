@@ -16,6 +16,7 @@ let deferredPrompt = null;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
+  console.log('beforeinstallprompt fired, captured deferredPrompt');
   const pwaBtn = document.getElementById('pwa-install-btn');
   const splashBtn = document.getElementById('splash-install-btn');
   if (pwaBtn) pwaBtn.style.display = 'flex';
@@ -23,18 +24,27 @@ window.addEventListener('beforeinstallprompt', (e) => {
 });
 
 function triggerPWAInstall() {
+  const ua = navigator.userAgent || '';
+  const isInApp = /FBAN|FBAV|Instagram|WhatsApp|Line|FB_IAB/i.test(ua);
+
   if (deferredPrompt) {
     deferredPrompt.prompt();
     deferredPrompt.userChoice.then((choiceResult) => {
       if (choiceResult.outcome === 'accepted') {
-        console.log('User accepted the PWA install prompt');
+        console.log('User accepted PWA installation');
       }
       deferredPrompt = null;
     });
+  } else if (isInApp) {
+    showModal(
+      "Open in Chrome to Install 📲",
+      "You are viewing this link inside WhatsApp/In-App browser!\n\n1. Tap the top-right 3 dots (⋮) or Share icon.\n2. Select 'Open in Chrome' or 'Open in Browser'.\n3. Tap 'Install App'!",
+      "🌐"
+    );
   } else {
     showModal(
       "Install App on Phone 📲",
-      "Android (Chrome): Tap top 3-dots ⋮ menu -> Select 'Install app' or 'Add to Home screen'.\n\niPhone (Safari): Tap Share button 📤 -> Select 'Add to Home Screen'.",
+      "Android (Chrome): Tap top 3-dots (⋮) menu -> Select 'Install app' or 'Add to Home screen'.\n\niPhone (Safari): Tap Share button (📤) -> Select 'Add to Home Screen'.",
       "📲"
     );
   }
