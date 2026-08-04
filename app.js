@@ -874,12 +874,7 @@ function initRakhiCeremony() {
   };
 
   btnTie.onclick = () => {
-    audio.playBell();
-    audio.startBgMusic();
-    triggerHaptic([30, 40, 30]);
-
-    if (tieBtnArea) tieBtnArea.style.display = 'none';
-
+    // 1. Execute video.play() FIRST to preserve Chrome Mobile user gesture context!
     try {
       video.currentTime = 0;
       video.muted = false;
@@ -891,7 +886,16 @@ function initRakhiCeremony() {
           video.play();
         });
       }
-    } catch(e) {}
+    } catch(e) {
+      console.log('Video play exception:', e);
+    }
+
+    // 2. Trigger audio synth & haptics after video play call
+    audio.playBell();
+    audio.startBgMusic();
+    triggerHaptic([30, 40, 30]);
+
+    if (tieBtnArea) tieBtnArea.style.display = 'none';
 
     if (fireworksTimer) clearTimeout(fireworksTimer);
     fireworksTimer = setTimeout(() => {
