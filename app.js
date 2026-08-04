@@ -446,14 +446,16 @@ function resetAllAppStages() {
   if (letterStage) letterStage.style.display = 'none';
   if (secretBtnArea) secretBtnArea.style.display = 'block';
 
-  // Rakhi ceremony video reset
+  // Rakhi ceremony video / canvas reset
   const video = document.getElementById('rakhi-ceremony-video');
-  const playOverlayBtn = document.getElementById('video-play-overlay-btn');
+  const canvas = document.getElementById('rakhi-ceremony-canvas');
+
   if (video) {
+    video.style.display = 'block';
     video.pause();
     try { video.currentTime = 0; } catch(e) {}
   }
-  if (playOverlayBtn) playOverlayBtn.style.display = 'flex';
+  if (canvas) canvas.style.display = 'none';
 
   const tieBtnArea = document.getElementById('tie-rakhi-btn-area');
   const hugBtnArea = document.getElementById('hug-btn-container');
@@ -773,14 +775,75 @@ function sendVirtualHugEmail() {
 
 function initRakhiCeremony() {
   const video = document.getElementById('rakhi-ceremony-video');
-  const playOverlayBtn = document.getElementById('video-play-overlay-btn');
-  const videoFrameContainer = document.getElementById('video-frame-container');
+  const canvas = document.getElementById('rakhi-ceremony-canvas');
   const btnTie = document.getElementById('btn-tie-rakhi');
   const btnHug = document.getElementById('btn-send-hug');
   const tieBtnArea = document.getElementById('tie-rakhi-btn-area');
   const hugBtnArea = document.getElementById('hug-btn-container');
 
   if (!btnTie || !video) return;
+
+  const startFallbackCanvasAnimation = () => {
+    if (!canvas) return;
+    video.style.display = 'none';
+    canvas.style.display = 'block';
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.parentElement.clientWidth || 320;
+    canvas.height = canvas.parentElement.clientHeight || 260;
+
+    const img = new Image();
+    img.src = 'assets/rakhi_wrist.png';
+
+    let progress = 0;
+    const particles = [];
+    for (let i = 0; i < 30; i++) {
+      particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: 10 + Math.random() * 12,
+        speedY: 0.8 + Math.random() * 1.2,
+        symbol: ['🌸', '✨', '❤️', '🪢'][Math.floor(Math.random() * 4)]
+      });
+    }
+
+    const draw = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw wrist image
+      if (img.complete && img.naturalWidth > 0) {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      } else {
+        ctx.fillStyle = '#ffeaf0';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+      }
+
+      // Draw Animated Golden Thread tying around wrist
+      progress = Math.min(progress + 0.015, 1);
+      ctx.beginPath();
+      ctx.strokeStyle = '#ffb703';
+      ctx.lineWidth = 6;
+      ctx.shadowColor = '#ff4d6d';
+      ctx.shadowBlur = 10;
+      ctx.arc(canvas.width / 2, canvas.height / 2, 60 * progress, 0, Math.PI * 2 * progress);
+      ctx.stroke();
+      ctx.shadowBlur = 0;
+
+      // Draw Floating Ceremony Petals & Sparkles
+      particles.forEach(p => {
+        p.y -= p.speedY;
+        if (p.y < -20) p.y = canvas.height + 20;
+        ctx.font = `${p.size}px sans-serif`;
+        ctx.fillText(p.symbol, p.x, p.y);
+      });
+
+      if (progress < 1 || !STATE.isRakhiTied) {
+        requestAnimationFrame(draw);
+      }
+    };
+
+    img.onload = draw;
+    draw();
+  };
 
   const startVideoPlay = (e) => {
     if (e) {
@@ -791,10 +854,9 @@ function initRakhiCeremony() {
     triggerHaptic([30, 40, 30]);
 
     if (tieBtnArea) tieBtnArea.style.display = 'none';
-    if (playOverlayBtn) playOverlayBtn.style.display = 'none';
 
     try {
-      video.muted = true; // Crucial for mobile Chrome autoplay policy!
+      video.muted = true;
       if (video.readyState >= 1) {
         video.currentTime = 0;
       }
@@ -802,17 +864,26 @@ function initRakhiCeremony() {
       console.log('Video reset note:', err);
     }
     
+    let isPlaying = false;
+
     // Play video smoothly on mobile Chrome & Safari
     const playPromise = video.play();
     if (playPromise !== undefined) {
       playPromise.then(() => {
+        isPlaying = true;
         console.log('Mobile video playing successfully!');
       }).catch(err => {
-        console.log('Mobile video play fallback:', err);
-        video.muted = true;
-        video.play().catch(e => console.log('Final video play error:', e));
+        console.log('Mobile video failed, starting canvas fallback animation:', err);
+        startFallbackCanvasAnimation();
       });
     }
+
+    // Safety fallback: if video is paused after 0.7s, start canvas animation!
+    setTimeout(() => {
+      if (video.paused && !isPlaying) {
+        startFallbackCanvasAnimation();
+      }
+    }, 700);
 
     const triggerCelebration = () => {
       if (STATE.isRakhiTied) return;
@@ -836,11 +907,6 @@ function initRakhiCeremony() {
 
   btnTie.onclick = startVideoPlay;
   btnTie.ontouchstart = startVideoPlay;
-
-  if (videoFrameContainer) {
-    videoFrameContainer.onclick = startVideoPlay;
-    videoFrameContainer.ontouchstart = startVideoPlay;
-  }
 
   btnHug.onclick = () => {
     audio.playPop();

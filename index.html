@@ -333,12 +333,10 @@
           <div class="title-underline"></div>
         </div>
 
-        <!-- Center Rounded Frame for Embedded Rakhi Video Player -->
-        <div class="reference-video-frame" id="video-frame-container" style="cursor: pointer;">
+        <!-- Center Rounded Frame for Embedded Rakhi Video Player / Ceremony Canvas -->
+        <div class="reference-video-frame" id="video-frame-container">
           <video id="rakhi-ceremony-video" src="assets/rakhi_video.mp4" playsinline webkit-playsinline muted preload="auto" poster="assets/rakhi_wrist.png"></video>
-          <div id="video-play-overlay-btn" class="video-overlay-play-btn">
-            ▶
-          </div>
+          <canvas id="rakhi-ceremony-canvas" style="display: none; width: 100%; height: 100%; object-fit: cover;"></canvas>
         </div>
 
         <!-- Emotional Message Below Video -->

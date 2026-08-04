@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rakhi-pwa-v2000';
+const CACHE_NAME = 'rakhi-pwa-v3000';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -17,7 +17,7 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Network-Only Strategy for instant video streaming
+// Network-Only Strategy
 self.addEventListener('fetch', (event) => {
   return;
 });
