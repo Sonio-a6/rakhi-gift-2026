@@ -2,80 +2,21 @@
    Rakhi With My Favorite Cousin - Application Logic & Interactive Engine
    ========================================================================== */
 
-// --- REGISTER PWA SERVICE WORKER FOR MOBILE INSTALLATION ---
+// --- FORCE UNREGISTER OLD SERVICE WORKERS & CLEAR CACHE TO PREVENT CACHE LOCK ---
 if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js')
-      .then(reg => console.log('PWA ServiceWorker Active:', reg))
-      .catch(err => console.log('PWA ServiceWorker error:', err));
+  navigator.serviceWorker.getRegistrations().then(registrations => {
+    for (let registration of registrations) {
+      registration.unregister();
+    }
   });
 }
 
-// Check if running inside installed standalone PWA app
-function isPWAInstalled() {
-  return window.matchMedia('(display-mode: standalone)').matches || 
-         window.navigator.standalone === true ||
-         document.referrer.includes('android-app://');
-}
-
-function hideInstallButtons() {
-  const pwaBtn = document.getElementById('pwa-install-btn');
-  const splashBtn = document.getElementById('splash-install-btn');
-  if (pwaBtn) pwaBtn.style.display = 'none';
-  if (splashBtn) splashBtn.style.display = 'none';
-}
-
-// PWA Install Event Handler
-let deferredPrompt = null;
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault();
-  deferredPrompt = e;
-  console.log('beforeinstallprompt fired, captured deferredPrompt');
-  if (!isPWAInstalled()) {
-    const pwaBtn = document.getElementById('pwa-install-btn');
-    const splashBtn = document.getElementById('splash-install-btn');
-    if (pwaBtn) pwaBtn.style.display = 'flex';
-    if (splashBtn) splashBtn.style.display = 'inline-block';
-  }
-});
-
-// Hide install buttons automatically once installed!
-window.addEventListener('appinstalled', () => {
-  console.log('PWA was installed successfully');
-  hideInstallButtons();
-});
-
-function triggerPWAInstall() {
-  if (isPWAInstalled()) {
-    hideInstallButtons();
-    return;
-  }
-
-  const ua = navigator.userAgent || '';
-  const isInApp = /FBAN|FBAV|Instagram|WhatsApp|Line|FB_IAB/i.test(ua);
-
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then((choiceResult) => {
-      if (choiceResult.outcome === 'accepted') {
-        console.log('User accepted PWA installation');
-        hideInstallButtons();
-      }
-      deferredPrompt = null;
-    });
-  } else if (isInApp) {
-    showModal(
-      "Open in Chrome to Install 📲",
-      "You are viewing this link inside WhatsApp/In-App browser!\n\n1. Tap top-right 3 dots (⋮) or Share icon.\n2. Select 'Open in Chrome'.\n3. Tap 'Install App'!",
-      "🌐"
-    );
-  } else {
-    showModal(
-      "Install App on Phone 📲",
-      "Android (Chrome): Tap top 3-dots (⋮) menu -> Select 'Install app' or 'Add to Home screen'.\n\niPhone (Safari): Tap Share button (📤) -> Select 'Add to Home Screen'.",
-      "📲"
-    );
-  }
+if ('caches' in window) {
+  caches.keys().then(names => {
+    for (let name of names) {
+      caches.delete(name);
+    }
+  });
 }
 
 // Clear any stale stored completion data on launch
@@ -415,29 +356,13 @@ function switchScreen(screenId) {
     bottomDock.style.display = 'flex';
   }
 
-  // Update Finale Photo dynamically if custom photo exists
+  // Trigger screen canvas initializers
+  if (screenId === 'act-8') initWheelCanvas();
+  if (screenId === 'act-11') drawDistanceMap();
   if (screenId === 'final-screen') {
-    const finaleImg = document.querySelector('.finale-img');
-    const customPhotos = JSON.parse(localStorage.getItem('rakhi_custom_photos')) || {};
-    if (finaleImg && customPhotos['p1']) {
-      finaleImg.src = customPhotos['p1'];
-    }
     fx.spawnFireworks(7);
     audio.playFanfare();
   }
-
-  // Trigger screen canvas initializers
-  if (screenId === 'act-5') {
-    const video = document.getElementById('rakhi-ceremony-video');
-    if (video) {
-      try {
-        video.pause();
-        video.currentTime = 0;
-      } catch(e) {}
-    }
-  }
-  if (screenId === 'act-8') initWheelCanvas();
-  if (screenId === 'act-11') drawDistanceMap();
 }
 
 function markActivityDone(actId) {
@@ -574,9 +499,7 @@ function resetAllAppStages() {
 // FEATURE 1: 📸 OUR MEMORIES ❤️ (SWAYING PHOTO WALL)
 // ==========================================================================
 
-function getSavedPhotos() {
-  return JSON.parse(localStorage.getItem('rakhi_custom_photos')) || {};
-}
+const SAVED_PHOTOS = JSON.parse(localStorage.getItem('rakhi_custom_photos')) || {};
 
 const MEMORY_PHOTOS = [
   { id: 'p1', defaultImg: 'assets/photos/photo1.jpg', caption: 'Best Cousin & Best Friend ❤️', stringRow: 1 },
@@ -623,12 +546,12 @@ function initPhotoWall() {
       reader.onload = (event) => {
         const base64 = event.target.result;
         const currentItem = MEMORY_PHOTOS[STATE.activePhotoIndex];
-        const saved = getSavedPhotos();
-        saved[currentItem.id] = base64;
-        localStorage.setItem('rakhi_custom_photos', JSON.stringify(saved));
+        SAVED_PHOTOS[currentItem.id] = base64;
+        localStorage.setItem('rakhi_custom_photos', JSON.stringify(SAVED_PHOTOS));
         
         document.getElementById('lightbox-img').src = base64;
-        renderPhotoWallItems(); // Immediately re-render wall thumbnails!
+        const thumbImg = document.getElementById(`thumb-${currentItem.id}`);
+        if (thumbImg) thumbImg.src = base64;
 
         audio.playPop();
         triggerHaptic([30, 30]);
@@ -648,7 +571,6 @@ function initPhotoWall() {
 }
 
 function renderPhotoWallItems() {
-  const savedPhotos = getSavedPhotos();
   [1, 2, 3].forEach(rowNum => {
     const rowElem = document.getElementById(`row-${rowNum}-polaroids`);
     if (!rowElem) return;
@@ -656,7 +578,7 @@ function renderPhotoWallItems() {
 
     const rowItems = MEMORY_PHOTOS.filter(item => item.stringRow === rowNum);
     rowItems.forEach((item, idx) => {
-      const photoSrc = savedPhotos[item.id] || item.defaultImg;
+      const photoSrc = SAVED_PHOTOS[item.id] || item.defaultImg;
       const card = document.createElement('div');
       card.className = 'polaroid-card';
       card.style.animationDelay = `${idx * 0.25}s`;
@@ -681,8 +603,7 @@ function renderPhotoWallItems() {
 function openLightbox(index) {
   STATE.activePhotoIndex = index;
   const item = MEMORY_PHOTOS[index];
-  const savedPhotos = getSavedPhotos();
-  const photoSrc = savedPhotos[item.id] || item.defaultImg;
+  const photoSrc = SAVED_PHOTOS[item.id] || item.defaultImg;
 
   document.getElementById('lightbox-img').src = photoSrc;
   document.getElementById('lightbox-caption').innerText = item.caption;
@@ -854,71 +775,69 @@ function initRakhiCeremony() {
   const tieBtnArea = document.getElementById('tie-rakhi-btn-area');
   const hugBtnArea = document.getElementById('hug-btn-container');
 
-  if (!video || !btnTie) return;
+  if (!btnTie || !video) return;
 
-  let fireworksTimer = null;
-
-  const triggerCelebration = () => {
-    if (STATE.isRakhiTied) return;
-    STATE.isRakhiTied = true;
-    audio.playFanfare();
-    triggerHaptic([50, 60, 50, 60]);
-    
-    // Massive Fireworks Explosion blowing across the entire screen!
-    fx.spawnFireworks(12);
-    fx.spawnBurst(window.innerWidth / 2, window.innerHeight / 2, 90, 'confetti');
-
-    if (hugBtnArea) hugBtnArea.style.display = 'block';
-    if (tieBtnArea) tieBtnArea.style.display = 'none';
-    markActivityDone('act-5');
-  };
-
-  btnTie.onclick = () => {
-    // 1. Execute video.play() FIRST to preserve Chrome Mobile user gesture context!
-    try {
-      video.currentTime = 0;
-      video.muted = false;
-      const p = video.play();
-      if (p !== undefined) {
-        p.catch(err => {
-          console.log('Unmuted play note:', err);
-          video.muted = true;
-          video.play();
-        });
-      }
-    } catch(e) {
-      console.log('Video play exception:', e);
-    }
-
-    // 2. Trigger audio synth & haptics after video play call
+  const startVideoPlay = () => {
     audio.playBell();
     audio.startBgMusic();
     triggerHaptic([30, 40, 30]);
 
     if (tieBtnArea) tieBtnArea.style.display = 'none';
 
-    if (fireworksTimer) clearTimeout(fireworksTimer);
-    fireworksTimer = setTimeout(() => {
+    video.currentTime = 0;
+    video.muted = true; // Essential for mobile autoplay policies!
+
+    const playPromise = video.play();
+    if (playPromise !== undefined) {
+      playPromise.then(() => {
+        // Attempt unmuting audio track if browser permits
+        try { video.muted = false; } catch(e) {}
+      }).catch(err => {
+        console.log('Mobile video retry muted:', err);
+        video.muted = true;
+        video.play().catch(e => console.log('Video error:', e));
+      });
+    }
+
+    const triggerCelebration = () => {
+      if (STATE.isRakhiTied) return;
+      STATE.isRakhiTied = true;
+      audio.playFanfare();
+      triggerHaptic([50, 60, 50, 60]);
+      
+      // Massive Fireworks Explosion blowing across the entire screen!
+      fx.spawnFireworks(12);
+      fx.spawnBurst(window.innerWidth / 2, window.innerHeight / 2, 90, 'confetti');
+
+      if (hugBtnArea) hugBtnArea.style.display = 'block';
+      markActivityDone('act-5');
+    };
+
+    video.onended = triggerCelebration;
+
+    // Trigger fireworks celebration after EXACTLY 11 SECONDS of video playing!
+    setTimeout(() => {
       triggerCelebration();
-    }, 12000);
+    }, 11000);
   };
 
-  if (btnHug) {
-    btnHug.onclick = () => {
-      audio.playPop();
-      triggerHaptic([40, 60, 40]);
-      fx.spawnBurst(window.innerWidth / 2, window.innerHeight / 2, 65, 'confetti');
+  btnTie.onclick = startVideoPlay;
+  video.onclick = startVideoPlay;
 
-      // Trigger Email Notification Delivery to atanu9791@gmail.com
-      sendVirtualHugEmail();
+  btnHug.onclick = () => {
+    audio.playPop();
+    triggerHaptic([40, 60, 40]);
+    fx.spawnBurst(window.innerWidth / 2, window.innerHeight / 2, 65, 'confetti');
 
-      showModal(
-        "Virtual Hug Sent! 🤗",
-        "A warm virtual hug email from Sananda Paul has been sent to atanu9791@gmail.com! 💖✨",
-        "💖"
-      );
-    };
-  }
+    // Trigger Email Notification Delivery to atanu9791@gmail.com
+    sendVirtualHugEmail();
+
+    showModal(
+      "Virtual Hug Sent! 🤗",
+      "A warm virtual hug email from Sananda Paul has been sent to atanu9791@gmail.com! 💖✨",
+      "💖"
+    );
+  };
 }
 
 // ==========================================================================
@@ -1355,19 +1274,8 @@ function initCuteBrotherCheck() {
 document.addEventListener('DOMContentLoaded', () => {
   fx = new CanvasParticles('bg-canvas');
 
-  // Check if app is already running as installed PWA app
-  if (isPWAInstalled()) {
-    hideInstallButtons();
-  }
-
   // Theme Init
   document.body.setAttribute('data-theme', STATE.theme);
-
-  // Install PWA Button Click Handlers
-  const pwaBtn = document.getElementById('pwa-install-btn');
-  const splashBtn = document.getElementById('splash-install-btn');
-  if (pwaBtn) pwaBtn.addEventListener('click', triggerPWAInstall);
-  if (splashBtn) splashBtn.addEventListener('click', triggerPWAInstall);
 
   // Audio Toggle
   document.getElementById('audio-toggle-btn').addEventListener('click', (e) => {

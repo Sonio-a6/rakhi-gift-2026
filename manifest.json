@@ -1,33 +1,18 @@
 {
-  "id": "rakhi-gift-pwa-v1",
-  "name": "Happy Raksha Bandhan ❤️",
+  "name": "Rakhi With My Favorite Cousin",
   "short_name": "Rakhi Gift",
-  "description": "A heartwarming mobile PWA gift app for my sister on Raksha Bandhan.",
+  "description": "A heartwarming, cute, funny & emotional mobile PWA gift for my favorite cousin sister on Raksha Bandhan.",
   "start_url": "./index.html",
-  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#fff0f5",
   "theme_color": "#ff8fa3",
-  "prefer_related_applications": false,
   "icons": [
     {
       "src": "./assets/rakhi_hero.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./assets/rakhi_hero.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "./assets/rakhi_hero.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ]
 }
