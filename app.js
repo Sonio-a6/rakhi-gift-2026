@@ -854,6 +854,35 @@ function initRakhiCeremony() {
 
     tieBtnArea.style.display = 'none';
 
+    let fireworksTimer = null;
+
+    const triggerCelebration = () => {
+      if (STATE.isRakhiTied) return;
+      STATE.isRakhiTied = true;
+      audio.playFanfare();
+      triggerHaptic([50, 60, 50, 60]);
+      
+      // Massive Fireworks Explosion blowing across the entire screen!
+      fx.spawnFireworks(12);
+      fx.spawnBurst(window.innerWidth / 2, window.innerHeight / 2, 90, 'confetti');
+
+      hugBtnArea.style.display = 'block';
+      markActivityDone('act-5');
+    };
+
+    // Trigger fireworks celebration EXACTLY 12 SECONDS after video actually starts playing!
+    video.onplaying = () => {
+      if (fireworksTimer) clearTimeout(fireworksTimer);
+      fireworksTimer = setTimeout(() => {
+        triggerCelebration();
+      }, 12000);
+    };
+
+    video.onended = () => {
+      if (fireworksTimer) clearTimeout(fireworksTimer);
+      triggerCelebration();
+    };
+
     // Chrome Mobile video play handler
     try {
       video.currentTime = 0;
@@ -873,27 +902,6 @@ function initRakhiCeremony() {
     } catch(e) {
       console.log('Video play error handled:', e);
     }
-
-    const triggerCelebration = () => {
-      if (STATE.isRakhiTied) return;
-      STATE.isRakhiTied = true;
-      audio.playFanfare();
-      triggerHaptic([50, 60, 50, 60]);
-      
-      // Massive Fireworks Explosion blowing across the entire screen!
-      fx.spawnFireworks(12);
-      fx.spawnBurst(window.innerWidth / 2, window.innerHeight / 2, 90, 'confetti');
-
-      hugBtnArea.style.display = 'block';
-      markActivityDone('act-5');
-    };
-
-    video.onended = triggerCelebration;
-
-    // Trigger fireworks celebration after EXACTLY 11 SECONDS of video playing!
-    setTimeout(() => {
-      triggerCelebration();
-    }, 11000);
   };
 
   btnHug.onclick = () => {
