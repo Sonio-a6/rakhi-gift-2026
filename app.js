@@ -2,6 +2,11 @@
    Rakhi With My Favorite Cousin - Application Logic & Interactive Engine
    ========================================================================== */
 
+// --- EXTERNAL VIDEO LINK OPTION ---
+// Paste any video URL here (YouTube, Google Drive, Streamable, Cloudinary, etc.)
+// If set, tapping "Tie Rakhi" will open this video link directly on her phone!
+let EXTERNAL_CEREMONY_VIDEO_URL = ""; 
+
 // --- FORCE UNREGISTER OLD SERVICE WORKERS & CLEAR CACHE TO PREVENT CACHE LOCK ---
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.getRegistrations().then(registrations => {
@@ -786,29 +791,29 @@ function initRakhiCeremony() {
     audio.startBgMusic();
     triggerHaptic([30, 40, 30]);
 
-    if (tieBtnArea) tieBtnArea.style.display = 'none';
+    // If an external video link is provided, open it on her phone!
+    if (EXTERNAL_CEREMONY_VIDEO_URL && EXTERNAL_CEREMONY_VIDEO_URL.trim() !== "") {
+      window.open(EXTERNAL_CEREMONY_VIDEO_URL.trim(), '_blank');
+    } else {
+      if (tieBtnArea) tieBtnArea.style.display = 'none';
+      video.style.display = 'block';
+      video.muted = true;
 
-    video.style.display = 'block';
-    video.muted = true; // Essential for mobile autoplay policies!
-
-    try {
-      if (video.readyState >= 1) {
-        video.currentTime = 0;
+      try {
+        if (video.readyState >= 1) {
+          video.currentTime = 0;
+        }
+      } catch(err) {
+        console.log('Video reset note:', err);
       }
-    } catch(err) {
-      console.log('Video reset note:', err);
-    }
-    
-    // Direct Play Call for mobile browsers
-    const playPromise = video.play();
-    if (playPromise !== undefined) {
-      playPromise.then(() => {
-        console.log('Mobile video playing successfully!');
-      }).catch(err => {
-        console.log('Mobile video play retry with muted:', err);
-        video.muted = true;
-        video.play().catch(e => console.log('Video play error:', e));
-      });
+      
+      const playPromise = video.play();
+      if (playPromise !== undefined) {
+        playPromise.catch(err => {
+          video.muted = true;
+          video.play().catch(e => console.log('Video play note:', e));
+        });
+      }
     }
 
     const triggerCelebration = () => {
