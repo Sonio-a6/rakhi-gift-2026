@@ -159,8 +159,8 @@ body, html {
   flex-direction: column;
   padding: 18px;
   padding-top: 68px; /* space for top nav */
-  padding-bottom: 120px; /* space for bottom nav & smooth scrolling */
-  overflow-y: auto;
+  padding-bottom: 150px; /* space for bottom nav & smooth scrolling */
+  overflow-y: scroll;
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
   opacity: 0;
@@ -182,7 +182,7 @@ body, html {
   touch-action: pan-y !important;
   padding: 18px !important;
   padding-top: 75px !important;
-  padding-bottom: 170px !important;
+  padding-bottom: 180px !important;
   scroll-behavior: smooth;
 }
 

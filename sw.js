@@ -1,15 +1,14 @@
-const CACHE_NAME = 'rakhi-pwa-v41';
+const CACHE_NAME = 'rakhi-pwa-v50';
 const ASSETS_TO_CACHE = [
   './',
-  './index.html?v=140000',
-  './styles.css?v=140000',
-  './app.js?v=140000',
+  './index.html?v=200000',
+  './styles.css?v=200000',
+  './app.js?v=200000',
   './manifest.json',
   './assets/rakhi_hero.png',
   './assets/rakhi_wrist.png',
   './assets/gift_box.png',
   './assets/cousin_bond.png',
-  './assets/rakhi_video.mp4',
   './assets/photos/photo1.jpg',
   './assets/photos/photo2.jpg',
   './assets/photos/photo3.jpg',
@@ -41,8 +40,13 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Network-First with Cache Fallback Strategy
+// Network-First Strategy with Video Streaming Bypass
 self.addEventListener('fetch', (event) => {
+  // Bypass Service Worker completely for video files & range requests so mobile streaming works 100%
+  if (event.request.url.includes('.mp4') || (event.request.headers.has('range') && event.request.headers.get('range'))) {
+    return;
+  }
+
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
