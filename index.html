@@ -328,7 +328,15 @@
         <!-- Center Rounded Frame for Embedded Rakhi Video Player -->
         <div class="reference-video-frame" id="video-frame-container" style="cursor: pointer;">
           <video id="rakhi-ceremony-video" src="assets/rakhi_video.mp4" playsinline webkit-playsinline muted autoplay loop preload="auto" poster="assets/rakhi_wrist.png"></video>
-          <div id="video-play-overlay" style="position: absolute; top:0; left:0; width:100%; height:100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.15); pointer-events: none; transition: opacity 0.3s ease; border-radius: 18px;">
+          
+          <!-- Animated Glowing Ceremony Fallback Engine -->
+          <div class="rakhi-animated-fallback" id="rakhi-animated-fallback" style="display: none;">
+            <div class="glowing-aura-ring"></div>
+            <img src="assets/rakhi_wrist.png" alt="Rakhi Ceremony" class="fallback-rakhi-img">
+            <div style="margin-top: 6px; color: #ff3b68; font-weight: 800; font-size: 0.88rem; z-index: 3; text-shadow: 0 1px 3px rgba(255,255,255,0.8);">✨ Tap Below to Tie Rakhi ✨</div>
+          </div>
+          
+          <div id="video-play-overlay" style="position: absolute; top:0; left:0; width:100%; height:100%; display: flex; flex-direction: column; align-items: center; justify-content: center; background: rgba(0,0,0,0.15); pointer-events: none; transition: opacity 0.3s ease; border-radius: 18px; z-index: 6;">
             <span style="font-size: 3.2rem; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.6));">✨</span>
             <span style="color: #ffffff; font-weight: 700; font-size: 0.85rem; margin-top: 4px; text-shadow: 0 2px 4px rgba(0,0,0,0.8);">Tap to Tie Rakhi</span>
           </div>

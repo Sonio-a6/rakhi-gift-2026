@@ -842,6 +842,7 @@ function initRakhiCeremony() {
   const video = document.getElementById('rakhi-ceremony-video');
   const videoContainer = document.getElementById('video-frame-container');
   const videoOverlay = document.getElementById('video-play-overlay');
+  const videoFallback = document.getElementById('rakhi-animated-fallback');
   const btnTie = document.getElementById('btn-tie-rakhi');
   const btnHug = document.getElementById('btn-send-hug');
   const tieBtnArea = document.getElementById('tie-rakhi-btn-area');
@@ -850,6 +851,19 @@ function initRakhiCeremony() {
   if (!video) return;
 
   let fireworksTimer = null;
+  let isVideoPlayingSmoothly = false;
+
+  video.onplaying = () => {
+    isVideoPlayingSmoothly = true;
+    if (videoFallback) videoFallback.style.display = 'none';
+  };
+
+  // If video stream takes more than 1.2s to load over mobile data, activate glowing Rakhi animation fallback
+  setTimeout(() => {
+    if (!isVideoPlayingSmoothly) {
+      if (videoFallback) videoFallback.style.display = 'flex';
+    }
+  }, 1200);
 
   // Ensure autoplay starts playing as soon as screen is visible
   try {
