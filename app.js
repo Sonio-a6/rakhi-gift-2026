@@ -777,7 +777,8 @@ function initRakhiCeremony() {
 
   if (!btnTie || !video) return;
 
-  const startVideoPlay = () => {
+  const startVideoPlay = (e) => {
+    if (e) e.preventDefault();
     audio.playBell();
     audio.startBgMusic();
     triggerHaptic([30, 40, 30]);
@@ -785,17 +786,17 @@ function initRakhiCeremony() {
     if (tieBtnArea) tieBtnArea.style.display = 'none';
 
     video.currentTime = 0;
-    video.muted = true; // Essential for mobile autoplay policies!
-
+    video.muted = true; // Crucial for mobile Chrome autoplay policy!
+    
+    // Play video smoothly on mobile Chrome & Safari
     const playPromise = video.play();
     if (playPromise !== undefined) {
       playPromise.then(() => {
-        // Attempt unmuting audio track if browser permits
-        try { video.muted = false; } catch(e) {}
+        console.log('Mobile video playing successfully!');
       }).catch(err => {
-        console.log('Mobile video retry muted:', err);
+        console.log('Mobile video play fallback:', err);
         video.muted = true;
-        video.play().catch(e => console.log('Video error:', e));
+        video.play().catch(e => console.log('Final video play error:', e));
       });
     }
 
@@ -805,7 +806,6 @@ function initRakhiCeremony() {
       audio.playFanfare();
       triggerHaptic([50, 60, 50, 60]);
       
-      // Massive Fireworks Explosion blowing across the entire screen!
       fx.spawnFireworks(12);
       fx.spawnBurst(window.innerWidth / 2, window.innerHeight / 2, 90, 'confetti');
 
@@ -815,14 +815,15 @@ function initRakhiCeremony() {
 
     video.onended = triggerCelebration;
 
-    // Trigger fireworks celebration after EXACTLY 11 SECONDS of video playing!
     setTimeout(() => {
       triggerCelebration();
     }, 11000);
   };
 
   btnTie.onclick = startVideoPlay;
+  btnTie.ontouchstart = startVideoPlay;
   video.onclick = startVideoPlay;
+  video.ontouchstart = startVideoPlay;
 
   btnHug.onclick = () => {
     audio.playPop();
