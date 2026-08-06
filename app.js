@@ -506,12 +506,12 @@ function resetAllAppStages() {
 // ==========================================================================
 
 const MEMORY_PHOTOS = [
-  { id: 'p1', defaultImg: 'assets/photos/photo1.jpg', caption: 'Best Cousin & Best Friend ❤️', stringRow: 1 },
-  { id: 'p2', defaultImg: 'assets/photos/photo2.jpg', caption: 'Laughs & Late-Night Talks 🌸', stringRow: 1 },
-  { id: 'p3', defaultImg: 'assets/photos/photo3.jpg', caption: 'World\'s Cutest Troublemakers 😂', stringRow: 2 },
-  { id: 'p4', defaultImg: 'assets/photos/photo4.png', caption: 'Unforgettable Memories ✨', stringRow: 2 },
-  { id: 'p5', defaultImg: 'assets/photos/photo5.jpg', caption: 'Partners in Crime Forever 💖', stringRow: 3 },
-  { id: 'p6', defaultImg: 'assets/photos/photo6.jpg', caption: 'Distance Means Nothing ❤️', stringRow: 3 }
+  { id: 'p1', defaultImg: 'assets/photos/photo1.jpg?v=101', caption: 'Best Cousin & Best Friend ❤️', stringRow: 1 },
+  { id: 'p2', defaultImg: 'assets/photos/photo2.jpg?v=101', caption: 'Laughs & Late-Night Talks 🌸', stringRow: 1 },
+  { id: 'p3', defaultImg: 'assets/photos/photo3.jpg?v=101', caption: 'World\'s Cutest Troublemakers 😂', stringRow: 2 },
+  { id: 'p4', defaultImg: 'assets/photos/photo4.png?v=101', caption: 'Unforgettable Memories ✨', stringRow: 2 },
+  { id: 'p5', defaultImg: 'assets/photos/photo5.jpg?v=101', caption: 'Partners in Crime Forever 💖', stringRow: 3 },
+  { id: 'p6', defaultImg: 'assets/photos/photo6.jpg?v=101', caption: 'Distance Means Nothing ❤️', stringRow: 3 }
 ];
 
 function initPhotoWall() {
