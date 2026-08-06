@@ -507,7 +507,7 @@ function resetAllAppStages() {
 
 const MEMORY_PHOTOS = [
   { id: 'p1', defaultImg: 'assets/photos/photo1.jpg', caption: 'Best Cousin & Best Friend ❤️', stringRow: 1 },
-  { id: 'p2', defaultImg: 'assets/photos/photo2.jpg', caption: 'Laughs & Late-Night Talks 🌸', stringRow: 1 },
+  { id: 'p2', defaultImg: 'assets/photos/h4.jpeg', caption: 'Laughs & Late-Night Talks 🌸', stringRow: 1 },
   { id: 'p3', defaultImg: 'assets/photos/photo3.jpg', caption: 'World\'s Cutest Troublemakers 😂', stringRow: 2 },
   { id: 'p4', defaultImg: 'assets/photos/photo4.png', caption: 'Unforgettable Memories ✨', stringRow: 2 },
   { id: 'p5', defaultImg: 'assets/photos/photo5.jpg', caption: 'Partners in Crime Forever 💖', stringRow: 3 },
@@ -538,17 +538,19 @@ function initPhotoWall() {
   const lightboxPrev = document.getElementById('lightbox-prev');
   const lightboxNext = document.getElementById('lightbox-next');
 
-  lightboxClose.onclick = () => lightboxModal.classList.remove('active');
-  lightboxPrev.onclick = () => navigateLightbox(-1);
-  lightboxNext.onclick = () => navigateLightbox(1);
+  if (lightboxClose) lightboxClose.onclick = () => lightboxModal.classList.remove('active');
+  if (lightboxPrev) lightboxPrev.onclick = () => navigateLightbox(-1);
+  if (lightboxNext) lightboxNext.onclick = () => navigateLightbox(1);
 
   let touchStartX = 0;
-  lightboxModal.ontouchstart = (e) => { touchStartX = e.touches[0].clientX; };
-  lightboxModal.ontouchend = (e) => {
-    const touchEndX = e.changedTouches[0].clientX;
-    if (touchStartX - touchEndX > 50) navigateLightbox(1);
-    if (touchEndX - touchStartX > 50) navigateLightbox(-1);
-  };
+  if (lightboxModal) {
+    lightboxModal.ontouchstart = (e) => { touchStartX = e.touches[0].clientX; };
+    lightboxModal.ontouchend = (e) => {
+      const touchEndX = e.changedTouches[0].clientX;
+      if (touchStartX - touchEndX > 50) navigateLightbox(1);
+      if (touchEndX - touchStartX > 50) navigateLightbox(-1);
+    };
+  }
 }
 
 function renderPhotoWallItems() {
@@ -559,13 +561,14 @@ function renderPhotoWallItems() {
 
     const rowItems = MEMORY_PHOTOS.filter(item => item.stringRow === rowNum);
     rowItems.forEach((item, idx) => {
+      const photoSrc = item.defaultImg;
       const card = document.createElement('div');
       card.className = 'polaroid-card';
       card.style.animationDelay = `${idx * 0.25}s`;
       card.innerHTML = `
         <div class="wooden-clip"></div>
         <div class="polaroid-img-wrapper">
-          <img src="${item.defaultImg}" alt="${item.caption}" class="polaroid-img" id="thumb-${item.id}">
+          <img src="${photoSrc}" alt="${item.caption}" class="polaroid-img" id="thumb-${item.id}">
         </div>
         <p class="polaroid-caption">${item.caption}</p>
       `;
@@ -583,8 +586,9 @@ function renderPhotoWallItems() {
 function openLightbox(index) {
   STATE.activePhotoIndex = index;
   const item = MEMORY_PHOTOS[index];
+  const photoSrc = item.defaultImg;
 
-  document.getElementById('lightbox-img').src = item.defaultImg;
+  document.getElementById('lightbox-img').src = photoSrc;
   document.getElementById('lightbox-caption').innerText = item.caption;
   document.getElementById('photo-lightbox-modal').classList.add('active');
 
