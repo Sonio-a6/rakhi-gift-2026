@@ -1349,4 +1349,81 @@ document.addEventListener('DOMContentLoaded', () => {
   initChatSimulator();
   initCuteBrotherCheck();
   resetAllAppStages();
+  setupMobileBackHandler();
 });
+
+// ==========================================================================
+// SINGLE-PAGE MOBILE BACK BUTTON NAVIGATION HANDLER (ZERO URL CHANGE / ZERO 404)
+// ==========================================================================
+function setupMobileBackHandler() {
+  try {
+    history.pushState({ page: 1 }, '', location.href);
+  } catch(e) {}
+
+  window.addEventListener('popstate', (e) => {
+    try {
+      history.pushState({ page: 1 }, '', location.href);
+    } catch(err) {}
+
+    handleMobileBackPress();
+  });
+
+  // Exit Modal Event Handlers
+  const exitModal = document.getElementById('exit-modal');
+  const btnStay = document.getElementById('exit-btn-stay');
+  const btnExit = document.getElementById('exit-btn-confirm');
+
+  if (btnStay) {
+    btnStay.onclick = () => {
+      if (exitModal) exitModal.classList.remove('active');
+    };
+  }
+
+  if (btnExit) {
+    btnExit.onclick = () => {
+      if (exitModal) exitModal.classList.remove('active');
+      try {
+        window.close();
+      } catch(e) {}
+      try {
+        history.back();
+      } catch(e) {}
+    };
+  }
+}
+
+function handleMobileBackPress() {
+  const currentScreen = STATE.activeScreen;
+
+  // 1. If global modal, exit modal, or photo lightbox is active, close it first
+  const activeModal = document.querySelector('.modal-overlay.active');
+  if (activeModal) {
+    activeModal.classList.remove('active');
+    return;
+  }
+
+  // 2. Mobile Back Navigation Requirements:
+  // - If the user is in Memories (act-1), go back to Home (home-screen).
+  // - If the user is in Rakhi (act-5), go back to Memories (act-1).
+  // - If the user is in Finale (final-screen), go back to Rakhi (act-5).
+  // - If the user is in any other activity (act-2..act-4, act-6..act-13), go back to Home (home-screen).
+  // - If the user is already on Home (home-screen or splash-screen), show Exit Confirmation Modal.
+
+  if (currentScreen === 'final-screen') {
+    switchScreen('act-5');
+  } else if (currentScreen === 'act-5') {
+    switchScreen('act-1');
+  } else if (currentScreen === 'act-1') {
+    switchScreen('home-screen');
+  } else if (currentScreen && currentScreen.startsWith('act-')) {
+    switchScreen('home-screen');
+  } else if (currentScreen === 'home-screen' || currentScreen === 'splash-screen') {
+    const exitModal = document.getElementById('exit-modal');
+    if (exitModal) {
+      exitModal.classList.add('active');
+      audio.playPop();
+    }
+  } else {
+    switchScreen('home-screen');
+  }
+}
