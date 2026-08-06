@@ -1,4 +1,4 @@
-const CACHE_NAME = 'rakhi-pwa-v40000';
+const CACHE_NAME = 'rakhi-pwa-v50000';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
