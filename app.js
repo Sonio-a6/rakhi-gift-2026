@@ -1353,17 +1353,20 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // ==========================================================================
-// SINGLE-PAGE MOBILE BACK BUTTON NAVIGATION HANDLER (ZERO URL CHANGE / ZERO 404)
+// SINGLE-PAGE MOBILE BACK BUTTON HISTORY TRAP HANDLER
 // ==========================================================================
 function setupMobileBackHandler() {
+  // Initial History Trap
   try {
-    history.pushState({ page: 1 }, '', location.href);
-  } catch(e) {}
+    history.replaceState({ app: true }, "", window.location.href);
+    history.pushState({ app: true }, "", window.location.href);
+  } catch (e) {}
 
   window.addEventListener('popstate', (e) => {
+    // Re-push history state immediately to keep user trapped in app
     try {
-      history.pushState({ page: 1 }, '', location.href);
-    } catch(err) {}
+      history.pushState({ app: true }, "", window.location.href);
+    } catch (err) {}
 
     handleMobileBackPress();
   });
@@ -1376,6 +1379,9 @@ function setupMobileBackHandler() {
   if (btnStay) {
     btnStay.onclick = () => {
       if (exitModal) exitModal.classList.remove('active');
+      try {
+        history.pushState({ app: true }, "", window.location.href);
+      } catch (e) {}
     };
   }
 
@@ -1383,11 +1389,8 @@ function setupMobileBackHandler() {
     btnExit.onclick = () => {
       if (exitModal) exitModal.classList.remove('active');
       try {
-        window.close();
-      } catch(e) {}
-      try {
         history.back();
-      } catch(e) {}
+      } catch (e) {}
     };
   }
 }
@@ -1402,12 +1405,11 @@ function handleMobileBackPress() {
     return;
   }
 
-  // 2. Mobile Back Navigation Requirements:
-  // - If the user is in Memories (act-1), go back to Home (home-screen).
-  // - If the user is in Rakhi (act-5), go back to Memories (act-1).
-  // - If the user is in Finale (final-screen), go back to Rakhi (act-5).
-  // - If the user is in any other activity (act-2..act-4, act-6..act-13), go back to Home (home-screen).
-  // - If the user is already on Home (home-screen or splash-screen), show Exit Confirmation Modal.
+  // 2. Navigation Flow Rules:
+  // - If Finale -> show Rakhi (act-5)
+  // - If Rakhi -> show Memories (act-1)
+  // - If Memories (act-1) or any activity -> show Home (home-screen)
+  // - If already on Home -> display Exit Confirmation Dialog
 
   if (currentScreen === 'final-screen') {
     switchScreen('act-5');
