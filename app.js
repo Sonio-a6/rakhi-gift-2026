@@ -505,15 +505,13 @@ function resetAllAppStages() {
 // FEATURE 1: 📸 OUR MEMORIES ❤️ (SWAYING PHOTO WALL)
 // ==========================================================================
 
-const SAVED_PHOTOS = JSON.parse(localStorage.getItem('rakhi_custom_photos')) || {};
-
 const MEMORY_PHOTOS = [
   { id: 'p1', defaultImg: 'assets/photos/photo1.jpg', caption: 'Best Cousin & Best Friend ❤️', stringRow: 1 },
   { id: 'p2', defaultImg: 'assets/photos/photo2.jpg', caption: 'Laughs & Late-Night Talks 🌸', stringRow: 1 },
   { id: 'p3', defaultImg: 'assets/photos/photo3.jpg', caption: 'World\'s Cutest Troublemakers 😂', stringRow: 2 },
   { id: 'p4', defaultImg: 'assets/photos/photo4.png', caption: 'Unforgettable Memories ✨', stringRow: 2 },
   { id: 'p5', defaultImg: 'assets/photos/photo5.jpg', caption: 'Partners in Crime Forever 💖', stringRow: 3 },
-  { id: 'p6', defaultImg: 'assets/photos/photo1.jpg', caption: 'Distance Means Nothing ❤️', stringRow: 3 }
+  { id: 'p6', defaultImg: 'assets/photos/photo6.jpg', caption: 'Distance Means Nothing ❤️', stringRow: 3 }
 ];
 
 function initPhotoWall() {
@@ -539,33 +537,10 @@ function initPhotoWall() {
   const lightboxClose = document.getElementById('lightbox-close');
   const lightboxPrev = document.getElementById('lightbox-prev');
   const lightboxNext = document.getElementById('lightbox-next');
-  const lightboxFileInput = document.getElementById('lightbox-file-input');
 
   lightboxClose.onclick = () => lightboxModal.classList.remove('active');
   lightboxPrev.onclick = () => navigateLightbox(-1);
   lightboxNext.onclick = () => navigateLightbox(1);
-
-  lightboxFileInput.onchange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const base64 = event.target.result;
-        const currentItem = MEMORY_PHOTOS[STATE.activePhotoIndex];
-        SAVED_PHOTOS[currentItem.id] = base64;
-        localStorage.setItem('rakhi_custom_photos', JSON.stringify(SAVED_PHOTOS));
-        
-        document.getElementById('lightbox-img').src = base64;
-        const thumbImg = document.getElementById(`thumb-${currentItem.id}`);
-        if (thumbImg) thumbImg.src = base64;
-
-        audio.playPop();
-        triggerHaptic([30, 30]);
-        fx.spawnBurst(window.innerWidth / 2, window.innerHeight / 2, 25);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   let touchStartX = 0;
   lightboxModal.ontouchstart = (e) => { touchStartX = e.touches[0].clientX; };
@@ -584,14 +559,13 @@ function renderPhotoWallItems() {
 
     const rowItems = MEMORY_PHOTOS.filter(item => item.stringRow === rowNum);
     rowItems.forEach((item, idx) => {
-      const photoSrc = SAVED_PHOTOS[item.id] || item.defaultImg;
       const card = document.createElement('div');
       card.className = 'polaroid-card';
       card.style.animationDelay = `${idx * 0.25}s`;
       card.innerHTML = `
         <div class="wooden-clip"></div>
         <div class="polaroid-img-wrapper">
-          <img src="${photoSrc}" alt="${item.caption}" class="polaroid-img" id="thumb-${item.id}">
+          <img src="${item.defaultImg}" alt="${item.caption}" class="polaroid-img" id="thumb-${item.id}">
         </div>
         <p class="polaroid-caption">${item.caption}</p>
       `;
@@ -609,9 +583,8 @@ function renderPhotoWallItems() {
 function openLightbox(index) {
   STATE.activePhotoIndex = index;
   const item = MEMORY_PHOTOS[index];
-  const photoSrc = SAVED_PHOTOS[item.id] || item.defaultImg;
 
-  document.getElementById('lightbox-img').src = photoSrc;
+  document.getElementById('lightbox-img').src = item.defaultImg;
   document.getElementById('lightbox-caption').innerText = item.caption;
   document.getElementById('photo-lightbox-modal').classList.add('active');
 
