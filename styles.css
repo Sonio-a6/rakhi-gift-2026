@@ -177,12 +177,12 @@ body, html {
   left: 0 !important;
   width: 100% !important;
   height: 100% !important;
-  overflow-y: scroll !important;
+  overflow-y: auto !important;
   -webkit-overflow-scrolling: touch !important;
   touch-action: pan-y !important;
   padding: 18px !important;
   padding-top: 75px !important;
-  padding-bottom: 220px !important;
+  padding-bottom: 240px !important;
   scroll-behavior: smooth;
 }
 
